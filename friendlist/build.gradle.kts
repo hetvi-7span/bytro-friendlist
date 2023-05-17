@@ -6,6 +6,8 @@ dependencies {
     implementation(libs.openApi)
     testImplementation(libs.springboot.test)
     testImplementation(libs.h2.database)
+    annotationProcessor(libs.mapstruct.processor)
+    implementation(libs.mapstruct)
 }
 
 group = "com.bytro.friendlist"
