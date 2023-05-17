@@ -1,0 +1,36 @@
+[versions]
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
+spring = "3.0.4"
+
+
+[plugins]
+#https://mvnrepository.com/artifact/com.diffplug.spotless/spotless-plugin-gradle
+spotless = { id = "com.diffplug.spotless", version = "6.16.0" }
+
+[libraries]
+# https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
+jackson-annotation = { module = "com.fasterxml.jackson.core:jackson-annotations", version = "2.14.2" }
+
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+spring-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "spring" }
+
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
+spring-starter-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "spring" }
+
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+spring-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "spring" }
+
+# https://mvnrepository.com/artifact/org.postgresql/postgresql
+postgres = { module = "org.postgresql:postgresql", version = "42.5.4" }
+
+# https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
+openApi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version = "2.0.0" }
+
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+springboot-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring" }
+
+# https://mvnrepository.com/artifact/com.h2database/h2
+h2-database = { module = "com.h2database:h2", version = "2.1.214" }
+
+
+
