@@ -1,8 +1,10 @@
 package com.bytro.friendlist.service;
 
-import com.bytro.friendlist.shared.record.request.SendFriendRequest;
-import com.bytro.friendlist.shared.record.response.BaseResponse;
+import com.bytro.friendlist.entity.FriendRequest;
+import java.util.Optional;
 
 public interface FriendRequestService {
-    BaseResponse<Void> send(SendFriendRequest sendFriendRequest);
+    FriendRequest send(FriendRequest sendFriendRequest);
+
+    Optional<FriendRequest> findPreviousPendingRequest(FriendRequest friendRequest);
 }

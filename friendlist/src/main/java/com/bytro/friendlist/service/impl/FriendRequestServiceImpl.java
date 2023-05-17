@@ -1,12 +1,14 @@
 package com.bytro.friendlist.service.impl;
 
 import com.bytro.friendlist.entity.FriendRequest;
+import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.repository.FriendRequestRepository;
 import com.bytro.friendlist.service.FriendRequestService;
+import com.bytro.friendlist.shared.enums.FriendRequestStatus;
 import com.bytro.friendlist.shared.enums.ResultCode;
-import com.bytro.friendlist.shared.record.request.SendFriendRequest;
-import com.bytro.friendlist.shared.record.response.BaseResponse;
-import com.bytro.friendlist.transformer.FriendRequestMapper;
+import java.util.Locale;
+import java.util.Optional;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,21 +16,35 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FriendRequestServiceImpl implements FriendRequestService {
 
-    private final FriendRequestMapper friendRequestMapper;
     private final FriendRequestRepository friendRequestRepository;
+    private final MessageSource messageSource;
 
-    public FriendRequestServiceImpl(
-            FriendRequestMapper friendRequestMapper,
-            FriendRequestRepository friendRequestRepository) {
-        this.friendRequestMapper = friendRequestMapper;
+    FriendRequestServiceImpl(
+            final FriendRequestRepository friendRequestRepository,
+            final MessageSource messageSource) {
         this.friendRequestRepository = friendRequestRepository;
+        this.messageSource = messageSource;
     }
 
     @Override
-    public BaseResponse<Void> send(SendFriendRequest sendFriendRequest) {
-        FriendRequest friendRequest = friendRequestMapper.RequestToEntity(sendFriendRequest);
-        friendRequestRepository.save(friendRequest);
-        return new BaseResponse<>(
-                ResultCode.SUCCESS.getValue(), "Friend request sent successfully");
+    public FriendRequest send(FriendRequest friendRequest) {
+
+        Optional<FriendRequest> previousPendingRequest = findPreviousPendingRequest(friendRequest);
+        if (previousPendingRequest.isPresent()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_REQUEST_ALREADY_SENT.getValue(),
+                    messageSource.getMessage(
+                            "friend.request.already.sent", new String[] {}, Locale.US));
+        }
+        friendRequest.setStatus(FriendRequestStatus.SENT);
+        return friendRequestRepository.save(friendRequest);
+    }
+
+    @Override
+    public Optional<FriendRequest> findPreviousPendingRequest(FriendRequest friendRequest) {
+        return friendRequestRepository.findBySenderIdAndReceiverIdAndStatus(
+                friendRequest.getSenderId(),
+                friendRequest.getReceiverId(),
+                FriendRequestStatus.SENT);
     }
 }

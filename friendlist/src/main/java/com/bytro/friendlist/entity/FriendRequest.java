@@ -84,4 +84,6 @@ public class FriendRequest extends Auditable {
         this.status = status;
         this.message = message;
     }
+
+    public FriendRequest() {}
 }
