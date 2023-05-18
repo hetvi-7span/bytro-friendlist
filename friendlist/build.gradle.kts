@@ -10,6 +10,7 @@ dependencies {
     implementation(libs.mapstruct)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+    implementation(libs.mail)
 }
 
 group = "com.bytro.friendlist"

@@ -2,10 +2,12 @@ package com.bytro.friendlist.handler;
 
 import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.exception.CustomException;
+import com.bytro.friendlist.service.EmailService;
 import com.bytro.friendlist.service.FriendRequestService;
 import com.bytro.friendlist.shared.enums.ResultCode;
 import com.bytro.friendlist.shared.record.request.SendFriendRequest;
 import com.bytro.friendlist.shared.record.response.BaseResponse;
+import com.bytro.friendlist.shared.record.response.EmailDetails;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
 import com.bytro.friendlist.transformer.FriendRequestMapper;
 import com.bytro.friendlist.utils.UserUtils;
@@ -19,15 +21,19 @@ public class FriendRequestHandler {
     private final FriendRequestService friendRequestService;
     private final FriendRequestMapper friendRequestMapper;
 
+    private final EmailService emailService;
+
     private final MessageSource messageSource;
 
     FriendRequestHandler(
             final FriendRequestService friendRequestService,
             final FriendRequestMapper friendRequestMapper,
-            final MessageSource messageSource) {
+            final MessageSource messageSource,
+            final EmailService emailService) {
         this.friendRequestService = friendRequestService;
         this.friendRequestMapper = friendRequestMapper;
         this.messageSource = messageSource;
+        this.emailService = emailService;
     }
 
     public BaseResponse<FriendRequestResponse> send(SendFriendRequest sendFriendRequest) {
@@ -36,7 +42,9 @@ public class FriendRequestHandler {
         FriendRequest requestSent = friendRequestService.send(friendRequest);
         FriendRequestResponse friendRequestResponse =
                 friendRequestMapper.entityToResponse(requestSent);
-
+        emailService.sendSimpleMail(
+                new EmailDetails(
+                        "shahhetvi252@gmail.com", "hi this is message body", "test subject"));
         return new BaseResponse<>(
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage(

@@ -43,5 +43,8 @@ mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.re
 # https://mvnrepository.com/artifact/org.projectlombok/lombok
 lombok = { module = "org.projectlombok:lombok", version = "1.18.26" }
 
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+mail = {module = 'org.springframework.boot:spring-boot-starter-mail',version="1.2.0.RELEASE"}
+
 
 

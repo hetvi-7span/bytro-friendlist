@@ -20,6 +20,17 @@ spring:
       ddl-auto: update
   jackson:
     default-property-inclusion: NON_NULL
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test.friendlist.123@gmail.com
+    password: ejbzjgqnupdqfuxb
+    properties:
+      mail:
+         smtp:
+            auth: true
+            starttls:
+              enable: true
 
 # LOGGING CONFIGURATION
 logging:
