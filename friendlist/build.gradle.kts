@@ -8,6 +8,9 @@ dependencies {
     testImplementation(libs.h2.database)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+    implementation(libs.mapstruct)
+    annotationProcessor(libs.mapstruct.processor)
+    implementation(libs.mail)
 }
 
 group = "com.bytro.friendlist"

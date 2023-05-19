@@ -18,6 +18,11 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQLDialect
       ddl-auto: none
+  jackson:
+      default-property-inclusion: NON_NULL
+  mail:
+      username: test.friendlist.123@gmail.com
+      password: ejbzjgqnupdqfuxb
 
 # LOGGING CONFIGURATION
 logging:
@@ -30,7 +35,11 @@ logging:
             sql:
               BasicBinder: TRACE
 
-
+#custom properties
+request:
+  mail:
+    subject : New friend alert
+    receiver : shahhetvi252@gmail.com
 
 
 
