@@ -2,7 +2,6 @@ package com.bytro.friendlist.handler;
 
 import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.exception.CustomException;
-import com.bytro.friendlist.service.EmailService;
 import com.bytro.friendlist.service.FriendRequestService;
 import com.bytro.friendlist.shared.enums.ResultCode;
 import com.bytro.friendlist.shared.record.request.SendFriendRequest;
@@ -21,9 +20,6 @@ public class FriendRequestHandler {
 
     private final FriendRequestService friendRequestService;
     private final FriendRequestMapper friendRequestMapper;
-
-    private final EmailService emailService;
-
     private final MessageSource messageSource;
 
     @Value("${request.mail.subject}")
@@ -35,25 +31,20 @@ public class FriendRequestHandler {
     FriendRequestHandler(
             final FriendRequestService friendRequestService,
             final FriendRequestMapper friendRequestMapper,
-            final MessageSource messageSource,
-            final EmailService emailService) {
+            final MessageSource messageSource) {
         this.friendRequestService = friendRequestService;
         this.friendRequestMapper = friendRequestMapper;
         this.messageSource = messageSource;
-        this.emailService = emailService;
     }
 
     public BaseResponse<FriendRequestResponse> send(SendFriendRequest sendFriendRequest) {
         validateFriendRequest(sendFriendRequest);
+        EmailDetails emailDetails = createEmailTemplate(sendFriendRequest.message());
         FriendRequest friendRequest = friendRequestMapper.requestToEntity(sendFriendRequest);
-        FriendRequest requestSent = friendRequestService.send(friendRequest);
+        FriendRequest requestSent = friendRequestService.send(friendRequest, emailDetails);
         FriendRequestResponse friendRequestResponse =
                 friendRequestMapper.entityToResponse(requestSent);
-        String message =
-                "Hi user, Configurations!! you will get a new friend..\n"
-                        + "Here is a special message for you : \n"
-                        + sendFriendRequest.message();
-        emailService.sendSimpleMail(new EmailDetails(mailReceiver, message, mailSubject));
+
         return new BaseResponse<>(
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage(
@@ -78,5 +69,30 @@ public class FriendRequestHandler {
                     ResultCode.USER_NOT_FOUND.getValue(),
                     messageSource.getMessage("user.not.found", new String[] {}, Locale.US));
         }
+    }
+
+    private EmailDetails createEmailTemplate(String message) {
+        if (message.isEmpty()) {
+            return new EmailDetails(
+                    mailReceiver,
+                    messageSource.getMessage(
+                            "friend.request.email.message",
+                            new String[] {
+                                messageSource.getMessage(
+                                        "friend.request.email.static.message",
+                                        new String[] {},
+                                        Locale.getDefault())
+                            },
+                            Locale.getDefault()),
+                    mailSubject);
+        }
+
+        return new EmailDetails(
+                mailReceiver,
+                messageSource.getMessage(
+                        "friend.request.email.message",
+                        new String[] {message},
+                        Locale.getDefault()),
+                mailSubject);
     }
 }

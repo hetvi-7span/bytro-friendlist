@@ -16,24 +16,41 @@ public class EmailConfiguration {
     @Value("${spring.mail.password}")
     private String password;
 
+    @Value("${spring.mail.host}")
+    private String host;
+
+    @Value("${spring.mail.smtp.ssl.trust}")
+    private String trust;
+
+    @Value("${spring.mail.transport.protocol}")
+    private String protocol;
+
+    @Value("${spring.mail.smtp.auth}")
+    private String auth;
+
+    @Value("${spring.mail.smtp.ssl.protocols}")
+    private String protocols;
+
+    @Value("${spring.mail.smtp.starttls.enable}")
+    private String enable;
+
+    @Value("${spring.mail.smtp.debug}")
+    private String debug;
+
     @Bean
     public JavaMailSender emailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-
-        // Configure email server properties
-        mailSender.setHost("smtp.gmail.com");
+        mailSender.setHost(host);
         mailSender.setPort(587);
         mailSender.setUsername(username);
         mailSender.setPassword(password);
-
-        // Additional properties
         Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.debug", "true");
+        props.put("mail.smtp.ssl.trust", trust);
+        props.put("mail.transport.protocol", protocol);
+        props.put("mail.smtp.ssl.protocols", protocols);
+        props.put("mail.smtp.auth", auth);
+        props.put("mail.smtp.starttls.enable", enable);
+        props.put("mail.smtp.debug", debug);
 
         return mailSender;
     }

@@ -1,7 +1,6 @@
 package com.bytro.friendlist.entity;
 
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -31,6 +30,5 @@ public class FriendRequest extends Auditable {
     @Enumerated(EnumType.STRING)
     private FriendRequestStatus status;
 
-    @Column(name = "message")
     private String message;
 }

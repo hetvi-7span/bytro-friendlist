@@ -3,9 +3,11 @@ package com.bytro.friendlist.service.impl;
 import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.repository.FriendRequestRepository;
+import com.bytro.friendlist.service.EmailService;
 import com.bytro.friendlist.service.FriendRequestService;
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
 import com.bytro.friendlist.shared.enums.ResultCode;
+import com.bytro.friendlist.shared.record.response.EmailDetails;
 import java.util.Locale;
 import java.util.Optional;
 import org.springframework.context.MessageSource;
@@ -19,15 +21,19 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     private final FriendRequestRepository friendRequestRepository;
     private final MessageSource messageSource;
 
+    private final EmailService emailService;
+
     FriendRequestServiceImpl(
             final FriendRequestRepository friendRequestRepository,
-            final MessageSource messageSource) {
+            final MessageSource messageSource,
+            final EmailService emailService) {
         this.friendRequestRepository = friendRequestRepository;
         this.messageSource = messageSource;
+        this.emailService = emailService;
     }
 
     @Override
-    public FriendRequest send(FriendRequest friendRequest) {
+    public FriendRequest send(FriendRequest friendRequest, EmailDetails emailDetails) {
 
         Optional<FriendRequest> previousPendingRequest = findPreviousPendingRequest(friendRequest);
         if (previousPendingRequest.isPresent()) {
@@ -37,6 +43,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                             "friend.request.already.sent", new String[] {}, Locale.US));
         }
         friendRequest.setStatus(FriendRequestStatus.SENT);
+        emailService.sendFriendRequestMail(emailDetails);
         return friendRequestRepository.save(friendRequest);
     }
 
