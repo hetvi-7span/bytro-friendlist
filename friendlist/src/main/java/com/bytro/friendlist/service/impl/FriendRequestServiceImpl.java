@@ -4,6 +4,7 @@ import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.repository.FriendRequestRepository;
 import com.bytro.friendlist.service.FriendRequestService;
+import com.bytro.friendlist.service.FriendsService;
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
 import com.bytro.friendlist.shared.enums.ResultCode;
 import java.util.Locale;
@@ -17,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class FriendRequestServiceImpl implements FriendRequestService {
 
     private final FriendRequestRepository friendRequestRepository;
+    private final FriendsService friendsService;
     private final MessageSource messageSource;
 
     FriendRequestServiceImpl(
             final FriendRequestRepository friendRequestRepository,
+            final FriendsService friendsService,
             final MessageSource messageSource) {
         this.friendRequestRepository = friendRequestRepository;
+        this.friendsService = friendsService;
         this.messageSource = messageSource;
     }
 
@@ -46,5 +50,30 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                 friendRequest.getSenderId(),
                 friendRequest.getReceiverId(),
                 FriendRequestStatus.SENT);
+    }
+
+    @Override
+    public void rejectFriendRequest(FriendRequest friendRequest) {
+        FriendRequest previousPendingRequest = previousPendingRequest(friendRequest);
+        previousPendingRequest.setStatus(FriendRequestStatus.REJECTED);
+        friendRequestRepository.save(previousPendingRequest);
+    }
+
+    @Override
+    public void acceptFriendRequest(FriendRequest friendRequest) {
+        FriendRequest previousPendingRequest = previousPendingRequest(friendRequest);
+        previousPendingRequest.setStatus(FriendRequestStatus.ACCEPTED);
+        friendRequestRepository.save(previousPendingRequest);
+        friendsService.acceptFriendRequest(friendRequest);
+    }
+
+    private FriendRequest previousPendingRequest(FriendRequest friendRequest) {
+        Optional<FriendRequest> previousPendingRequest = findPreviousPendingRequest(friendRequest);
+        if (previousPendingRequest.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.USER_NOT_FOUND.getValue(),
+                    messageSource.getMessage("no.data.found", new String[] {}, Locale.US));
+        }
+        return previousPendingRequest.get();
     }
 }
