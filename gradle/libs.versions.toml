@@ -32,5 +32,8 @@ springboot-test = { module = "org.springframework.boot:spring-boot-starter-test"
 # https://mvnrepository.com/artifact/com.h2database/h2
 h2-database = { module = "com.h2database:h2", version = "2.1.214" }
 
+# https://mvnrepository.com/artifact/org.projectlombok/lombok
+lombok = { module = "org.projectlombok:lombok", version = "1.18.26" }
+
 
 

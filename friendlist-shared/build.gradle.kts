@@ -1,6 +1,6 @@
 dependencies {
-    implementation(libs.jackson.annotation)
-    implementation(libs.spring.validation)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
 }
 
 group = "com.bytro.friendlist"

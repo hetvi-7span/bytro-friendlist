@@ -6,6 +6,8 @@ dependencies {
     implementation(libs.openApi)
     testImplementation(libs.springboot.test)
     testImplementation(libs.h2.database)
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
 }
 
 group = "com.bytro.friendlist"
