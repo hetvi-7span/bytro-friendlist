@@ -5,8 +5,11 @@ import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.repository.FriendRequestRepository;
 import com.bytro.friendlist.service.FriendRequestService;
 import com.bytro.friendlist.service.FriendsService;
+import com.bytro.friendlist.service.EmailService;
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
 import com.bytro.friendlist.shared.enums.ResultCode;
+import com.bytro.friendlist.shared.record.response.EmailDetails;
+import com.bytro.friendlist.utils.EmailUtils;
 import java.util.Locale;
 import java.util.Optional;
 import org.springframework.context.MessageSource;
@@ -18,16 +21,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class FriendRequestServiceImpl implements FriendRequestService {
 
     private final FriendRequestRepository friendRequestRepository;
-    private final FriendsService friendsService;
     private final MessageSource messageSource;
+    private final FriendsService friendsService;
+    private final EmailService emailService;
+
+    private final EmailUtils emailUtils;
 
     FriendRequestServiceImpl(
             final FriendRequestRepository friendRequestRepository,
             final FriendsService friendsService,
-            final MessageSource messageSource) {
+            final MessageSource messageSource,
+            final EmailService emailService,
+            final EmailUtils emailUtils) {
         this.friendRequestRepository = friendRequestRepository;
         this.friendsService = friendsService;
         this.messageSource = messageSource;
+        this.emailService = emailService;
+        this.emailUtils = emailUtils;
     }
 
     @Override
@@ -41,7 +51,14 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                             "friend.request.already.sent", new String[] {}, Locale.US));
         }
         friendRequest.setStatus(FriendRequestStatus.SENT);
+        sendFriendRequestEmail(friendRequest.getMessage());
+
         return friendRequestRepository.save(friendRequest);
+    }
+
+    private void sendFriendRequestEmail(String message) {
+        EmailDetails emailDetails = emailUtils.createEmailTemplate(message);
+        emailService.sendFriendRequestMail(emailDetails);
     }
 
     @Override
