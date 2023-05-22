@@ -14,6 +14,9 @@ import com.bytro.friendlist.utils.EmailUtils;
 import java.util.Locale;
 import java.util.Optional;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,5 +101,12 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                             "no.data.found", new String[] {Constant.FRIEND_REQUEST}, Locale.US));
         }
         return validFriendRequest.get();
+    }
+
+    @Override
+    public Page<FriendRequest> getFriendRequestList(Integer userId, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return friendRequestRepository.findByReceiverIdAndStatus(
+                userId, FriendRequestStatus.SENT, paging);
     }
 }
