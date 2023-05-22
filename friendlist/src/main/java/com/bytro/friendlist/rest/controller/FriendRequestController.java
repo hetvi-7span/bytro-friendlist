@@ -25,6 +25,7 @@ public class FriendRequestController {
         return friendRequestHandler.send(sendFriendRequest);
     }
 
+    @Operation(summary = "Accepting/rejecting a friend request")
     @PostMapping("/accept-reject-friend-request")
     public BaseResponse<Void> acceptRejectFriendRequest(
             @RequestBody AcceptRejectFriendRequest acceptRejectFriendRequest) {

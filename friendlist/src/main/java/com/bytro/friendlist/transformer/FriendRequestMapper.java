@@ -17,5 +17,7 @@ public interface FriendRequestMapper {
     FriendRequestResponse entityToResponse(FriendRequest requestSent);
 
     @Mapping(target = "status", ignore = true)
+    @Mapping(source = "friendRequestId", target = "id")
+    @Mapping(source = "recipientId", target = "receiverId")
     FriendRequest requestToEntity(AcceptRejectFriendRequest acceptRejectFriendRequest);
 }

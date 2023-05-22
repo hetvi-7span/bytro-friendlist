@@ -21,8 +21,19 @@ spring:
   jackson:
       default-property-inclusion: NON_NULL
   mail:
-      username: test.friendlist.123@gmail.com
-      password: ejbzjgqnupdqfuxb
+    host: smtp.gmail.com
+    transport:
+      protocol: smtp
+    username: test.friendlist.123@gmail.com
+    password: ejbzjgqnupdqfuxb
+    smtp:
+      debug: true
+      starttls:
+        enable: true
+      auth: true
+      ssl:
+        protocols: TLSv1.2
+        trust: smtp.gmail.com
 
 # LOGGING CONFIGURATION
 logging:
