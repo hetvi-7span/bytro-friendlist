@@ -85,7 +85,7 @@ public class FriendRequestHandler {
             AcceptRejectFriendRequest acceptRejectFriendRequest) {
         FriendRequest friendRequest =
                 friendRequestMapper.requestToEntity(acceptRejectFriendRequest);
-        if (acceptRejectFriendRequest.status()) {
+        if (acceptRejectFriendRequest.isAccepted()) {
             friendRequestService.acceptFriendRequest(friendRequest);
             return new BaseResponse<>(
                     ResultCode.SUCCESS.getValue(),
