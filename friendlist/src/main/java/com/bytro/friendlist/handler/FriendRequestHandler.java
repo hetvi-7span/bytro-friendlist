@@ -6,12 +6,10 @@ import com.bytro.friendlist.service.FriendRequestService;
 import com.bytro.friendlist.shared.enums.ResultCode;
 import com.bytro.friendlist.shared.record.request.SendFriendRequest;
 import com.bytro.friendlist.shared.record.response.BaseResponse;
-import com.bytro.friendlist.shared.record.response.EmailDetails;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
 import com.bytro.friendlist.transformer.FriendRequestMapper;
 import com.bytro.friendlist.utils.UserUtils;
 import java.util.Locale;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +19,6 @@ public class FriendRequestHandler {
     private final FriendRequestService friendRequestService;
     private final FriendRequestMapper friendRequestMapper;
     private final MessageSource messageSource;
-
-    @Value("${request.mail.subject}")
-    private String mailSubject;
-
-    @Value("${request.mail.receiver}")
-    private String mailReceiver;
 
     FriendRequestHandler(
             final FriendRequestService friendRequestService,
@@ -39,9 +31,9 @@ public class FriendRequestHandler {
 
     public BaseResponse<FriendRequestResponse> send(SendFriendRequest sendFriendRequest) {
         validateFriendRequest(sendFriendRequest);
-        EmailDetails emailDetails = createEmailTemplate(sendFriendRequest.message());
+
         FriendRequest friendRequest = friendRequestMapper.requestToEntity(sendFriendRequest);
-        FriendRequest requestSent = friendRequestService.send(friendRequest, emailDetails);
+        FriendRequest requestSent = friendRequestService.send(friendRequest);
         FriendRequestResponse friendRequestResponse =
                 friendRequestMapper.entityToResponse(requestSent);
 
@@ -69,30 +61,5 @@ public class FriendRequestHandler {
                     ResultCode.USER_NOT_FOUND.getValue(),
                     messageSource.getMessage("user.not.found", new String[] {}, Locale.US));
         }
-    }
-
-    private EmailDetails createEmailTemplate(String message) {
-        if (message.isEmpty()) {
-            return new EmailDetails(
-                    mailReceiver,
-                    messageSource.getMessage(
-                            "friend.request.email.message",
-                            new String[] {
-                                messageSource.getMessage(
-                                        "friend.request.email.static.message",
-                                        new String[] {},
-                                        Locale.getDefault())
-                            },
-                            Locale.getDefault()),
-                    mailSubject);
-        }
-
-        return new EmailDetails(
-                mailReceiver,
-                messageSource.getMessage(
-                        "friend.request.email.message",
-                        new String[] {message},
-                        Locale.getDefault()),
-                mailSubject);
     }
 }

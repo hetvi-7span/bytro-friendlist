@@ -8,6 +8,7 @@ import com.bytro.friendlist.service.FriendRequestService;
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
 import com.bytro.friendlist.shared.enums.ResultCode;
 import com.bytro.friendlist.shared.record.response.EmailDetails;
+import com.bytro.friendlist.utils.EmailUtils;
 import java.util.Locale;
 import java.util.Optional;
 import org.springframework.context.MessageSource;
@@ -23,17 +24,21 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     private final EmailService emailService;
 
+    private final EmailUtils emailUtils;
+
     FriendRequestServiceImpl(
             final FriendRequestRepository friendRequestRepository,
             final MessageSource messageSource,
-            final EmailService emailService) {
+            final EmailService emailService,
+            final EmailUtils emailUtils) {
         this.friendRequestRepository = friendRequestRepository;
         this.messageSource = messageSource;
         this.emailService = emailService;
+        this.emailUtils = emailUtils;
     }
 
     @Override
-    public FriendRequest send(FriendRequest friendRequest, EmailDetails emailDetails) {
+    public FriendRequest send(FriendRequest friendRequest) {
 
         Optional<FriendRequest> previousPendingRequest = findPreviousPendingRequest(friendRequest);
         if (previousPendingRequest.isPresent()) {
@@ -43,8 +48,14 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                             "friend.request.already.sent", new String[] {}, Locale.US));
         }
         friendRequest.setStatus(FriendRequestStatus.SENT);
-        emailService.sendFriendRequestMail(emailDetails);
+        sendFriendRequestEmail(friendRequest.getMessage());
+
         return friendRequestRepository.save(friendRequest);
+    }
+
+    private void sendFriendRequestEmail(String message) {
+        EmailDetails emailDetails = emailUtils.createEmailTemplate(message);
+        emailService.sendFriendRequestMail(emailDetails);
     }
 
     @Override
