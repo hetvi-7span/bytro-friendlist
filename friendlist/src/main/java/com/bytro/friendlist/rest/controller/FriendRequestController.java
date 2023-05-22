@@ -1,6 +1,7 @@
 package com.bytro.friendlist.rest.controller;
 
 import com.bytro.friendlist.handler.FriendRequestHandler;
+import com.bytro.friendlist.shared.record.request.AcceptRejectFriendRequest;
 import com.bytro.friendlist.shared.record.request.SendFriendRequest;
 import com.bytro.friendlist.shared.record.response.BaseResponse;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
@@ -22,5 +23,12 @@ public class FriendRequestController {
     public BaseResponse<FriendRequestResponse> send(
             @RequestBody SendFriendRequest sendFriendRequest) {
         return friendRequestHandler.send(sendFriendRequest);
+    }
+
+    @Operation(summary = "Accepting/rejecting a friend request")
+    @PostMapping("/accept-reject-friend-request")
+    public BaseResponse<Void> acceptRejectFriendRequest(
+            @RequestBody AcceptRejectFriendRequest acceptRejectFriendRequest) {
+        return friendRequestHandler.acceptRejectFriendRequest(acceptRejectFriendRequest);
     }
 }

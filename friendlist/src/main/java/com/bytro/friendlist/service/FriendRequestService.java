@@ -7,4 +7,8 @@ public interface FriendRequestService {
     FriendRequest send(FriendRequest sendFriendRequest);
 
     Optional<FriendRequest> findPreviousPendingRequest(FriendRequest friendRequest);
+
+    void rejectFriendRequest(FriendRequest friendRequest);
+
+    void acceptFriendRequest(FriendRequest friendRequest);
 }
