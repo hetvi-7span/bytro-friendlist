@@ -18,6 +18,22 @@ spring:
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQLDialect
       ddl-auto: none
+  jackson:
+      default-property-inclusion: NON_NULL
+  mail:
+    host: smtp.gmail.com
+    transport:
+      protocol: smtp
+    username: test.friendlist.123@gmail.com
+    password: ejbzjgqnupdqfuxb
+    smtp:
+      debug: true
+      starttls:
+        enable: true
+      auth: true
+      ssl:
+        protocols: TLSv1.2
+        trust: smtp.gmail.com
 
 # LOGGING CONFIGURATION
 logging:
@@ -30,7 +46,11 @@ logging:
             sql:
               BasicBinder: TRACE
 
-
+#custom properties
+request:
+  mail:
+    subject : New friend alert
+    receiver : shahhetvi252@gmail.com
 
 
 
