@@ -7,7 +7,7 @@ server:
 # SPRING CONFIGURATION
 spring:
   application:
-    name: friend-management
+    name: friendlist
   # SPRING JPA CONFIGURATION
   datasource:
     url: jdbc:postgresql://0.0.0.0:5432/friendlist_management
