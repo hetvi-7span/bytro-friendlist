@@ -13,7 +13,10 @@ public enum ResultCode {
 
     // send friend request
     SENDER_RECEIVER_SAME(1001, "Sender and receiver should not be same"),
-    FRIEND_REQUEST_ALREADY_SENT(1002, "Friend request already sent");
+    FRIEND_REQUEST_ALREADY_SENT(1002, "Friend request already sent"),
+
+    // approve reject request
+    FRIEND_REQUEST_NOT_FOUND(2001, "Friend request not found");
 
     private final int value;
     private final String name;

@@ -10,10 +10,9 @@ import com.bytro.friendlist.shared.record.response.BaseResponse;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
 import com.bytro.friendlist.transformer.FriendRequestMapper;
 import com.bytro.friendlist.utils.UserUtils;
+import java.util.Locale;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class FriendRequestHandler {

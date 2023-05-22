@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Integer> {
     Optional<FriendRequest> findBySenderIdAndReceiverIdAndStatus(
             Integer senderId, Integer receiverId, FriendRequestStatus status);
+
+    Optional<FriendRequest> findByIdAndReceiverIdAndStatus(
+            Integer id, int receiverId, FriendRequestStatus friendRequestStatus);
 }
