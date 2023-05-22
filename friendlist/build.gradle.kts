@@ -8,6 +8,7 @@ dependencies {
     testImplementation(libs.h2.database)
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+    implementation(libs.logback.encoder)
 }
 
 group = "com.bytro.friendlist"

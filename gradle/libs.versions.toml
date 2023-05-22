@@ -35,5 +35,9 @@ h2-database = { module = "com.h2database:h2", version = "2.1.214" }
 # https://mvnrepository.com/artifact/org.projectlombok/lombok
 lombok = { module = "org.projectlombok:lombok", version = "1.18.26" }
 
+# https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "7.3" }
+
+
 
 
