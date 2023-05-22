@@ -4,6 +4,7 @@ import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.service.FriendRequestService;
 import com.bytro.friendlist.shared.enums.ResultCode;
+import com.bytro.friendlist.shared.record.request.AcceptRejectFriendRequest;
 import com.bytro.friendlist.shared.record.request.SendFriendRequest;
 import com.bytro.friendlist.shared.record.response.BaseResponse;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
@@ -61,5 +62,23 @@ public class FriendRequestHandler {
                     ResultCode.USER_NOT_FOUND.getValue(),
                     messageSource.getMessage("user.not.found", new String[] {}, Locale.US));
         }
+    }
+
+    public BaseResponse<Void> acceptRejectFriendRequest(
+            AcceptRejectFriendRequest acceptRejectFriendRequest) {
+        FriendRequest friendRequest =
+                friendRequestMapper.requestToEntity(acceptRejectFriendRequest);
+        if (acceptRejectFriendRequest.isAccepted()) {
+            friendRequestService.acceptFriendRequest(friendRequest);
+            return new BaseResponse<>(
+                    ResultCode.SUCCESS.getValue(),
+                    messageSource.getMessage(
+                            "friend.request.accept.successfully", new String[] {}, Locale.US));
+        }
+        friendRequestService.rejectFriendRequest(friendRequest);
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage(
+                        "friend.request.declined.successfully", new String[] {}, Locale.US));
     }
 }

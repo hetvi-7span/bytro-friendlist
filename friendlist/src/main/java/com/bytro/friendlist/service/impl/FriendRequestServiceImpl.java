@@ -5,9 +5,11 @@ import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.repository.FriendRequestRepository;
 import com.bytro.friendlist.service.EmailService;
 import com.bytro.friendlist.service.FriendRequestService;
+import com.bytro.friendlist.service.FriendsService;
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
 import com.bytro.friendlist.shared.enums.ResultCode;
 import com.bytro.friendlist.shared.record.response.EmailDetails;
+import com.bytro.friendlist.utils.Constant;
 import com.bytro.friendlist.utils.EmailUtils;
 import java.util.Locale;
 import java.util.Optional;
@@ -21,17 +23,19 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     private final FriendRequestRepository friendRequestRepository;
     private final MessageSource messageSource;
-
+    private final FriendsService friendsService;
     private final EmailService emailService;
 
     private final EmailUtils emailUtils;
 
     FriendRequestServiceImpl(
             final FriendRequestRepository friendRequestRepository,
+            final FriendsService friendsService,
             final MessageSource messageSource,
             final EmailService emailService,
             final EmailUtils emailUtils) {
         this.friendRequestRepository = friendRequestRepository;
+        this.friendsService = friendsService;
         this.messageSource = messageSource;
         this.emailService = emailService;
         this.emailUtils = emailUtils;
@@ -64,5 +68,35 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                 friendRequest.getSenderId(),
                 friendRequest.getReceiverId(),
                 FriendRequestStatus.SENT);
+    }
+
+    @Override
+    public void rejectFriendRequest(FriendRequest friendRequest) {
+        FriendRequest validFriendRequest = validateFriendRequest(friendRequest);
+        validFriendRequest.setStatus(FriendRequestStatus.REJECTED);
+        friendRequestRepository.save(validFriendRequest);
+    }
+
+    @Override
+    public void acceptFriendRequest(FriendRequest friendRequest) {
+        FriendRequest validFriendRequest = validateFriendRequest(friendRequest);
+        validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
+        friendRequestRepository.save(validFriendRequest);
+        friendsService.acceptFriendRequest(friendRequest);
+    }
+
+    private FriendRequest validateFriendRequest(FriendRequest friendRequest) {
+        Optional<FriendRequest> validFriendRequest =
+                friendRequestRepository.findByIdAndReceiverIdAndStatus(
+                        friendRequest.getId(),
+                        friendRequest.getReceiverId(),
+                        FriendRequestStatus.SENT);
+        if (validFriendRequest.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_REQUEST_NOT_FOUND.getValue(),
+                    messageSource.getMessage(
+                            "no.data.found", new String[] {Constant.FRIEND_REQUEST}, Locale.US));
+        }
+        return validFriendRequest.get();
     }
 }
