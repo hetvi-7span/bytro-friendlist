@@ -83,17 +83,17 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     @Override
     public void acceptFriendRequest(FriendRequest friendRequest) {
         FriendRequest validFriendRequest = validateFriendRequest(friendRequest);
-        validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
-        friendRequestRepository.save(validFriendRequest);
-        friendsService.acceptFriendRequest(friendRequest);
+        if (validFriendRequest.getReceiverId() == friendRequest.getReceiverId()) {
+            validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
+            friendRequestRepository.save(validFriendRequest);
+            friendsService.acceptFriendRequest(validFriendRequest);
+        }
     }
 
     private FriendRequest validateFriendRequest(FriendRequest friendRequest) {
         Optional<FriendRequest> validFriendRequest =
-                friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        friendRequest.getId(),
-                        friendRequest.getReceiverId(),
-                        FriendRequestStatus.SENT);
+                friendRequestRepository.findByIdAndStatus(
+                        friendRequest.getId(), FriendRequestStatus.SENT);
         if (validFriendRequest.isEmpty()) {
             throw new CustomException(
                     ResultCode.FRIEND_REQUEST_NOT_FOUND.getValue(),
@@ -113,8 +113,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     @Override
     public void cancelFriendRequest(Integer requestId, Integer senderId) {
         Optional<FriendRequest> validFriendRequest =
-                friendRequestRepository.findByIdAndSenderIdAndStatus(
-                        requestId, senderId, FriendRequestStatus.SENT);
+                friendRequestRepository.findByIdAndStatus(requestId, FriendRequestStatus.SENT);
         if (validFriendRequest.isEmpty()) {
             throw new CustomException(
                     ResultCode.FRIEND_RECORD_NOT_FOUND.getValue(),
@@ -123,7 +122,10 @@ public class FriendRequestServiceImpl implements FriendRequestService {
         }
 
         FriendRequest friendRequest = validFriendRequest.get();
-        friendRequest.setStatus(FriendRequestStatus.CANCELED);
-        friendRequestRepository.save(friendRequest);
+
+        if (friendRequest.getSenderId() == senderId) {
+            friendRequest.setStatus(FriendRequestStatus.CANCELED);
+            friendRequestRepository.save(friendRequest);
+        }
     }
 }
