@@ -12,7 +12,7 @@ spring:
   datasource:
     url: jdbc:postgresql://0.0.0.0:5432/friendlist_management
     username: postgres
-    password: root
+    password: test
   jpa:
     open-in-view: false
     hibernate:
@@ -20,6 +20,11 @@ spring:
       ddl-auto: none
   jackson:
       default-property-inclusion: NON_NULL
+  flyway:
+    url: jdbc:postgresql://localhost:5432/friendlist_management
+    schemas: friendlist_management
+    user: postgres
+    password: test
   mail:
     host: smtp.gmail.com
     transport:
@@ -34,6 +39,7 @@ spring:
       ssl:
         protocols: TLSv1.2
         trust: smtp.gmail.com
+
 
 # LOGGING CONFIGURATION
 logging:
