@@ -109,4 +109,21 @@ public class FriendRequestServiceImpl implements FriendRequestService {
         return friendRequestRepository.findByReceiverIdAndStatus(
                 userId, FriendRequestStatus.SENT, paging);
     }
+
+    @Override
+    public void cancelFriendRequest(Integer requestId, Integer senderId) {
+        Optional<FriendRequest> validFriendRequest =
+                friendRequestRepository.findByIdAndSenderIdAndStatus(
+                        requestId, senderId, FriendRequestStatus.SENT);
+        if (validFriendRequest.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_RECORD_NOT_FOUND.getValue(),
+                    messageSource.getMessage(
+                            "no.data.found", new String[] {Constant.FRIEND_REQUEST}, Locale.US));
+        }
+
+        FriendRequest friendRequest = validFriendRequest.get();
+        friendRequest.setStatus(FriendRequestStatus.CANCELED);
+        friendRequestRepository.save(friendRequest);
+    }
 }
