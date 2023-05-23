@@ -20,7 +20,7 @@ public enum ResultCode {
 
     FRIENDSHIP_DOES_NOT_EXISTS(3001, "You both are not friends"),
 
-    CAN_NOT_UNBLOCK(3002,"You can not unblock");
+    CAN_NOT_UNBLOCK(3002, "You can not unblock");
 
     private final int value;
     private final String name;
