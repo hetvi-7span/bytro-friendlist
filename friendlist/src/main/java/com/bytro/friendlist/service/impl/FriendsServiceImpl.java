@@ -68,20 +68,13 @@ public class FriendsServiceImpl implements FriendsService {
     @Override
     public void unblock(Integer userId, Integer friendId) {
         Friends friendShip = checkIfFriendsExists(userId, friendId);
-
-        if (friendShip.getBlockedBy() != userId) {
-            throw new CustomException(
-                    ResultCode.CAN_NOT_UNBLOCK.getValue(),
-                    messageSource.getMessage("can.not.unblock", new String[] {}, Locale.US));
-        }
-
         friendShip.setBlocked(false);
 
         Optional<Friends> inverseFriendshipOptional =
                 friendRepository.findByIdUserIdAndIdFriendId(friendId, userId);
         if (inverseFriendshipOptional.isPresent()) {
             Friends inverseFriendship = inverseFriendshipOptional.get();
-            inverseFriendship.setBlockedBy(0);
+            inverseFriendship.setBlockedBy(null);
             friendRepository.save(inverseFriendship);
         }
         friendRepository.save(friendShip);
