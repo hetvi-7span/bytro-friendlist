@@ -15,6 +15,7 @@ public class FriendsController {
     FriendsController(final FriendsHandler friendsHandler) {
         this.friendsHandler = friendsHandler;
     }
+
     @Operation(summary = "Unfriend a friend")
     @PostMapping("/unfriend/{userId}/{friendId}")
     public BaseResponse<Void> unfriend(
