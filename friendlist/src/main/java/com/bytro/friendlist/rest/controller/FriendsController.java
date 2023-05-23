@@ -22,4 +22,18 @@ public class FriendsController {
             @PathVariable Integer userId, @PathVariable Integer friendId) {
         return friendsHandler.unfriend(userId, friendId);
     }
+
+    @Operation(summary = "Block a friend")
+    @PostMapping("/block/{userId}/{friendId}")
+    public BaseResponse<Void> blockFriend(
+            @PathVariable Integer userId, @PathVariable Integer friendId) {
+        return friendsHandler.block(userId, friendId);
+    }
+
+    @Operation(summary = "Unblock a friend")
+    @PostMapping("/unblock/{userId}/{friendId}")
+    public BaseResponse<Void> unBlockFriend(
+            @PathVariable Integer userId, @PathVariable Integer friendId) {
+        return friendsHandler.unblock(userId, friendId);
+    }
 }
