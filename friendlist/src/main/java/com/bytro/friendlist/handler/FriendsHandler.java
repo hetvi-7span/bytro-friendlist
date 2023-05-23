@@ -24,4 +24,18 @@ public class FriendsHandler {
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage("unfriending.successful", new String[] {}, Locale.US));
     }
+
+    public BaseResponse<Void> block(Integer userId, Integer friendId) {
+        friendsService.block(userId, friendId);
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage("block.successful", new String[] {}, Locale.US));
+    }
+
+    public BaseResponse<Void> unblock(Integer userId, Integer friendId) {
+        friendsService.unblock(userId, friendId);
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage("unblock.successful", new String[] {}, Locale.US));
+    }
 }

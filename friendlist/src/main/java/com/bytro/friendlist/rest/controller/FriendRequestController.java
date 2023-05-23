@@ -35,6 +35,7 @@ public class FriendRequestController {
             @RequestBody AcceptRejectFriendRequest acceptRejectFriendRequest) {
         return friendRequestHandler.acceptRejectFriendRequest(acceptRejectFriendRequest);
     }
+
     @Operation(summary = "List of friend request")
     @GetMapping("/friend-requests")
     public BaseResponse<List<PendingFriendRequestResponse>> getPendingFriendRequestList(

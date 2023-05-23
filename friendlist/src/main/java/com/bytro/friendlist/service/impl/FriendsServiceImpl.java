@@ -49,4 +49,57 @@ public class FriendsServiceImpl implements FriendsService {
         friendRepository.deleteByIdUserIdAndIdFriendId(userId, friendId);
         friendRepository.deleteByIdUserIdAndIdFriendId(friendId, userId);
     }
+
+    @Override
+    public void block(Integer userId, Integer friendId) {
+        Friends friendShip = checkIfFriendsExists(userId, friendId);
+        friendShip.setBlocked(true);
+        friendShip.setBlockedBy(userId);
+
+        Optional<Friends> inverseFriendshipOptional =
+                friendRepository.findByIdUserIdAndIdFriendId(friendId, userId);
+        if (inverseFriendshipOptional.isPresent()) {
+            Friends inverseFriendship = inverseFriendshipOptional.get();
+            inverseFriendship.setBlocked(true);
+            inverseFriendship.setBlockedBy(userId);
+            friendRepository.save(inverseFriendship);
+        }
+        friendRepository.save(friendShip);
+    }
+
+    @Override
+    public void unblock(Integer userId, Integer friendId) {
+        Friends friendShip = checkIfFriendsExists(userId, friendId);
+
+        if (friendShip.getBlockedBy() != userId) {
+            throw new CustomException(
+                    ResultCode.CAN_NOT_UNBLOCK.getValue(),
+                    messageSource.getMessage(
+                            "can.not.unblock", new String[] {}, Locale.US));
+        }
+
+        friendShip.setBlocked(false);
+        friendShip.setBlockedBy(0);
+
+        Optional<Friends> inverseFriendshipOptional =
+                friendRepository.findByIdUserIdAndIdFriendId(friendId, userId);
+        if (inverseFriendshipOptional.isPresent()) {
+            Friends inverseFriendship = inverseFriendshipOptional.get();
+            inverseFriendship.setBlocked(false);
+            inverseFriendship.setBlockedBy(0);
+            friendRepository.save(inverseFriendship);
+        }
+        friendRepository.save(friendShip);
+    }
+
+    private Friends checkIfFriendsExists(Integer userId, Integer friendId) {
+        Optional<Friends> friends = friendRepository.findByIdUserIdAndIdFriendId(userId, friendId);
+        if (friends.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIENDSHIP_DOES_NOT_EXISTS.getValue(),
+                    messageSource.getMessage(
+                            "friendship.does.not.exists", new String[] {}, Locale.US));
+        }
+        return friends.get();
+    }
 }
