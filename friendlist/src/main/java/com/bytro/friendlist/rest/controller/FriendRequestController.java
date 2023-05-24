@@ -7,6 +7,7 @@ import com.bytro.friendlist.shared.record.response.BaseResponse;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
 import com.bytro.friendlist.shared.record.response.PendingFriendRequestResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +26,14 @@ public class FriendRequestController {
     @Operation(summary = "Send friend request")
     @PostMapping("/send-friend-request")
     public BaseResponse<FriendRequestResponse> send(
-            @RequestBody SendFriendRequest sendFriendRequest) {
+            @Valid @RequestBody SendFriendRequest sendFriendRequest) {
         return friendRequestHandler.send(sendFriendRequest);
     }
 
     @Operation(summary = "Accepting/rejecting a friend request")
     @PostMapping("/accept-reject-friend-request")
     public BaseResponse<Void> acceptRejectFriendRequest(
-            @RequestBody AcceptRejectFriendRequest acceptRejectFriendRequest) {
+            @Valid @RequestBody AcceptRejectFriendRequest acceptRejectFriendRequest) {
         return friendRequestHandler.acceptRejectFriendRequest(acceptRejectFriendRequest);
     }
 

@@ -10,12 +10,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Integer> {
-    Optional<FriendRequest> findBySenderIdAndReceiverIdAndStatus(
-            Integer senderId, Integer receiverId, FriendRequestStatus status);
+    Optional<FriendRequest> findBySenderIdAndReceiverIdOrderByIdDesc(
+            Integer senderId, Integer receiverId);
 
     Optional<FriendRequest> findByIdAndReceiverIdAndStatus(
             Integer id, int receiverId, FriendRequestStatus friendRequestStatus);
 
     Page<FriendRequest> findByReceiverIdAndStatus(
             Integer receiverId, FriendRequestStatus status, Pageable pageable);
+
+    Optional<FriendRequest> findByReceiverIdAndSenderIdOrderByIdDesc(int receiverId, int senderId);
 }

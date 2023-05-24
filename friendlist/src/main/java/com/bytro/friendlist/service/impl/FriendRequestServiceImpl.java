@@ -46,14 +46,44 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     @Override
     public FriendRequest send(FriendRequest friendRequest) {
+        // Check if user blocked you or not
+        friendsService.checkIfUserIsBlockedOrNot(
+                friendRequest.getSenderId(), friendRequest.getReceiverId());
 
         Optional<FriendRequest> previousPendingRequest = findPreviousPendingRequest(friendRequest);
         if (previousPendingRequest.isPresent()) {
-            throw new CustomException(
-                    ResultCode.FRIEND_REQUEST_ALREADY_SENT.getValue(),
-                    messageSource.getMessage(
-                            "friend.request.already.sent", new String[] {}, Locale.US));
+
+            // check if both users are friends or not
+            if (previousPendingRequest.get().getStatus().equals(FriendRequestStatus.ACCEPTED)) {
+                throw new CustomException(
+                        ResultCode.ALREADY_FRIENDS.getValue(),
+                        messageSource.getMessage(
+                                "already.friends", new String[] {}, Locale.getDefault()));
+            }
+
+            // check if friend request is sent or not
+            if (previousPendingRequest.get().getStatus().equals(FriendRequestStatus.SENT)) {
+                throw new CustomException(
+                        ResultCode.FRIEND_REQUEST_ALREADY_SENT.getValue(),
+                        messageSource.getMessage(
+                                "friend.request.already.sent",
+                                new String[] {},
+                                Locale.getDefault()));
+            }
         }
+        // check if friend request already received by user
+        Optional<FriendRequest> friendRequestAlreadyReceivedByUser =
+                friendRequestRepository.findByReceiverIdAndSenderIdOrderByIdDesc(
+                        friendRequest.getSenderId(), friendRequest.getReceiverId());
+        if (friendRequestAlreadyReceivedByUser.isPresent()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_REQUEST_ALREADY_RECEIVED.getValue(),
+                    messageSource.getMessage(
+                            "friend.request.already.received",
+                            new String[] {},
+                            Locale.getDefault()));
+        }
+
         friendRequest.setStatus(FriendRequestStatus.SENT);
         sendFriendRequestEmail(friendRequest.getMessage());
 
@@ -67,10 +97,8 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     @Override
     public Optional<FriendRequest> findPreviousPendingRequest(FriendRequest friendRequest) {
-        return friendRequestRepository.findBySenderIdAndReceiverIdAndStatus(
-                friendRequest.getSenderId(),
-                friendRequest.getReceiverId(),
-                FriendRequestStatus.SENT);
+        return friendRequestRepository.findBySenderIdAndReceiverIdOrderByIdDesc(
+                friendRequest.getSenderId(), friendRequest.getReceiverId());
     }
 
     @Override
@@ -85,7 +113,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
         FriendRequest validFriendRequest = validateFriendRequest(friendRequest);
         validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
         friendRequestRepository.save(validFriendRequest);
-        friendsService.acceptFriendRequest(friendRequest);
+        friendsService.acceptFriendRequest(validFriendRequest);
     }
 
     private FriendRequest validateFriendRequest(FriendRequest friendRequest) {
@@ -98,7 +126,9 @@ public class FriendRequestServiceImpl implements FriendRequestService {
             throw new CustomException(
                     ResultCode.FRIEND_REQUEST_NOT_FOUND.getValue(),
                     messageSource.getMessage(
-                            "no.data.found", new String[] {Constant.FRIEND_REQUEST}, Locale.US));
+                            "no.data.found",
+                            new String[] {Constant.FRIEND_REQUEST},
+                            Locale.getDefault()));
         }
         return validFriendRequest.get();
     }
