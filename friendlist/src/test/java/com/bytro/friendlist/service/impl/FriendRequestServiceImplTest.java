@@ -1,6 +1,8 @@
 package com.bytro.friendlist.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,12 +11,17 @@ import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.repository.FriendRequestRepository;
 import com.bytro.friendlist.service.FriendsService;
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class FriendRequestServiceImplTest {
@@ -55,5 +62,30 @@ class FriendRequestServiceImplTest {
         assertEquals(FriendRequestStatus.ACCEPTED, REQUEST.getStatus());
         verify(friendRequestRepository, times(1)).save(REQUEST);
         verify(friendsService, times(1)).acceptFriendRequest(REQUEST);
+    }
+
+    @Test
+    void getFriendRequestList() {
+        Integer userId = 1;
+        Integer page = 0;
+        Integer size = 3;
+
+        List<FriendRequest> friendRequestList = new ArrayList<>();
+        friendRequestList.add(new FriendRequest(1, 2, userId, FriendRequestStatus.SENT, "hii"));
+        friendRequestList.add(new FriendRequest(2, 3, userId, FriendRequestStatus.SENT, "hii"));
+        friendRequestList.add(new FriendRequest(3, 4, userId, FriendRequestStatus.SENT, "hii"));
+
+        Page<FriendRequest> friendRequestPage = new PageImpl<>(friendRequestList);
+
+        when(friendRequestRepository.findByReceiverIdAndStatus(
+                        eq(userId), eq(FriendRequestStatus.SENT), any(Pageable.class)))
+                .thenReturn(friendRequestPage);
+
+        final var resultPage = friendRequestService.getFriendRequestList(userId, page, size);
+
+        assertEquals(friendRequestList.size(), resultPage.getTotalElements());
+        assertEquals(page, resultPage.getNumber());
+        assertEquals(size, resultPage.getSize());
+        assertEquals(friendRequestList, resultPage.getContent());
     }
 }
