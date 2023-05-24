@@ -15,5 +15,5 @@ public interface FriendRequestService {
 
     Page<FriendRequest> getFriendRequestList(Integer userId, Integer page, Integer size);
 
-    void cancelFriendRequest(Integer requestId, Integer senderId);
+    void cancel(Integer requestId, Integer senderId);
 }

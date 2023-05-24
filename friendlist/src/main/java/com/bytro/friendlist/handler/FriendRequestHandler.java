@@ -101,11 +101,11 @@ public class FriendRequestHandler {
                 pendingResponsesList);
     }
 
-    public BaseResponse<Void> cancelFriendRequest(Integer requestId, Integer senderId) {
-        friendRequestService.cancelFriendRequest(requestId, senderId);
+    public BaseResponse<Void> cancel(Integer requestId, Integer senderId) {
+        friendRequestService.cancel(requestId, senderId);
         return new BaseResponse<>(
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage(
-                        "friend.request.canceled.successfully", new String[] {}, Locale.US));
+                        "friend.request.cancelled.successfully", new String[] {}, Locale.US));
     }
 }

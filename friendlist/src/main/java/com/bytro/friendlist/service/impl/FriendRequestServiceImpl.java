@@ -111,7 +111,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     }
 
     @Override
-    public void cancelFriendRequest(Integer requestId, Integer senderId) {
+    public void cancel(Integer requestId, Integer senderId) {
         Optional<FriendRequest> validFriendRequest =
                 friendRequestRepository.findByIdAndStatus(requestId, FriendRequestStatus.SENT);
         if (validFriendRequest.isEmpty()) {

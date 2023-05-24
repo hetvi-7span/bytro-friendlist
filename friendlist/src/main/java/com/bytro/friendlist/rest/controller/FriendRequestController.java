@@ -48,6 +48,6 @@ public class FriendRequestController {
     @PostMapping("/api/friends/cancel-request/{requestId}/{senderId}")
     public BaseResponse<Void> cancelFriendRequest(
             @PathVariable Integer requestId, @PathVariable Integer senderId) {
-        return friendRequestHandler.cancelFriendRequest(requestId, senderId);
+        return friendRequestHandler.cancel(requestId, senderId);
     }
 }
