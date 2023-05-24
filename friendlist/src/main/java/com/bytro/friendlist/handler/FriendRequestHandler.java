@@ -8,10 +8,13 @@ import com.bytro.friendlist.shared.record.request.AcceptRejectFriendRequest;
 import com.bytro.friendlist.shared.record.request.SendFriendRequest;
 import com.bytro.friendlist.shared.record.response.BaseResponse;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
+import com.bytro.friendlist.shared.record.response.PendingFriendRequestResponse;
 import com.bytro.friendlist.transformer.FriendRequestMapper;
 import com.bytro.friendlist.utils.UserUtils;
+import java.util.List;
 import java.util.Locale;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -80,5 +83,21 @@ public class FriendRequestHandler {
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage(
                         "friend.request.declined.successfully", new String[] {}, Locale.US));
+    }
+
+    public BaseResponse<List<PendingFriendRequestResponse>> getFriendRequestList(
+            Integer userId, Integer page, Integer size) {
+        Page<FriendRequest> friendRequestPage =
+                friendRequestService.getFriendRequestList(userId, page, size);
+        List<PendingFriendRequestResponse> pendingResponsesList =
+                friendRequestMapper.pendingRequestResponse(friendRequestPage.getContent());
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage(
+                        "pending.request.fetched.successfully", new String[] {}, Locale.US),
+                friendRequestPage.getTotalElements(),
+                friendRequestPage.getTotalPages(),
+                friendRequestPage.getNumber(),
+                pendingResponsesList);
     }
 }

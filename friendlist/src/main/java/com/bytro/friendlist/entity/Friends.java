@@ -15,4 +15,5 @@ import lombok.Setter;
 public class Friends extends Auditable {
     @EmbeddedId private FriendsId id;
     boolean isBlocked = false;
+    private Integer blockedBy;
 }

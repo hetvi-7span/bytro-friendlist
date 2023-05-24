@@ -49,4 +49,45 @@ public class FriendsServiceImpl implements FriendsService {
         friendRepository.deleteByIdUserIdAndIdFriendId(userId, friendId);
         friendRepository.deleteByIdUserIdAndIdFriendId(friendId, userId);
     }
+
+    @Override
+    public void block(Integer userId, Integer friendId) {
+        Friends friendShip = checkIfFriendsExists(userId, friendId);
+        friendShip.setBlocked(true);
+
+        Optional<Friends> inverseFriendshipOptional =
+                friendRepository.findByIdUserIdAndIdFriendId(friendId, userId);
+        if (inverseFriendshipOptional.isPresent()) {
+            Friends inverseFriendship = inverseFriendshipOptional.get();
+            inverseFriendship.setBlockedBy(userId);
+            friendRepository.save(inverseFriendship);
+        }
+        friendRepository.save(friendShip);
+    }
+
+    @Override
+    public void unblock(Integer userId, Integer friendId) {
+        Friends friendShip = checkIfFriendsExists(userId, friendId);
+        friendShip.setBlocked(false);
+
+        Optional<Friends> inverseFriendshipOptional =
+                friendRepository.findByIdUserIdAndIdFriendId(friendId, userId);
+        if (inverseFriendshipOptional.isPresent()) {
+            Friends inverseFriendship = inverseFriendshipOptional.get();
+            inverseFriendship.setBlockedBy(null);
+            friendRepository.save(inverseFriendship);
+        }
+        friendRepository.save(friendShip);
+    }
+
+    private Friends checkIfFriendsExists(Integer userId, Integer friendId) {
+        Optional<Friends> friends = friendRepository.findByIdUserIdAndIdFriendId(userId, friendId);
+        if (friends.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIENDSHIP_DOES_NOT_EXISTS.getValue(),
+                    messageSource.getMessage(
+                            "friendship.does.not.exists", new String[] {}, Locale.US));
+        }
+        return friends.get();
+    }
 }
