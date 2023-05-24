@@ -24,7 +24,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/friendlist_management
     schemas: friendlist_management
     user: postgres
-    password: test
+    password: root
   mail:
     host: smtp.gmail.com
     transport:
