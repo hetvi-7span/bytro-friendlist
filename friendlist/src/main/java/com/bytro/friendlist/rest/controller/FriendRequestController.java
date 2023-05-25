@@ -9,6 +9,7 @@ import com.bytro.friendlist.shared.record.response.PendingFriendRequestResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,5 +42,12 @@ public class FriendRequestController {
     public BaseResponse<List<PendingFriendRequestResponse>> getPendingFriendRequestList(
             @RequestParam Integer userId, @RequestParam Integer page, @RequestParam Integer size) {
         return friendRequestHandler.getFriendRequestList(userId, page, size);
+    }
+
+    @Operation(summary = "Cancel a friend request")
+    @PostMapping("/api/friends/cancel-request/{requestId}/{senderId}")
+    public BaseResponse<Void> cancelFriendRequest(
+            @PathVariable Integer requestId, @PathVariable Integer senderId) {
+        return friendRequestHandler.cancel(requestId, senderId);
     }
 }

@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum FriendRequestStatus {
     SENT("Request Sent"),
     ACCEPTED("Request Accepted"),
-    REJECTED("Request Rejected");
+    REJECTED("Request Rejected"),
+    CANCELED("Request Canceled");
 
     private final String status;
 }
