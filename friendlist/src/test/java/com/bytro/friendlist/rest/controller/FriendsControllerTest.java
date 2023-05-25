@@ -22,11 +22,12 @@ import org.springframework.test.web.servlet.MockMvc;
 class FriendsControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockBean FriendsHandler friendsHandler;
+    private static final Integer userId = 1;
+    private static final Integer friendId = 2;
 
     @Test
     void unfriend() throws Exception {
-        final Integer userId = 1;
-        final Integer friendId = 2;
+
         when(friendsHandler.unfriend(userId, friendId))
                 .thenReturn(new BaseResponse<>(0, "user unfriend successfully."));
         final var requestBuilder =
@@ -43,6 +44,48 @@ class FriendsControllerTest {
               "resultMessage": "user unfriend successfully."
             }
             """))
+                .andReturn();
+    }
+
+    @Test
+    void blockFriend() throws Exception {
+        when(friendsHandler.block(userId, friendId))
+                .thenReturn(new BaseResponse<>(0, "friend unblocked successfully."));
+        final var requestBuilder =
+                post("/block/{userId}/{friendId}", userId, friendId)
+                        .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(
+                        content()
+                                .json(
+                                        """
+                {
+                  "resultCode": 0,
+                  "resultMessage": "friend unblocked successfully."
+                }
+                """))
+                .andReturn();
+    }
+
+    @Test
+    void unBlockFriend() throws Exception {
+        when(friendsHandler.unblock(userId, friendId))
+                .thenReturn(new BaseResponse<>(0, "friend unblocked successfully."));
+        final var requestBuilder =
+                post("/unblock/{userId}/{friendId}", userId, friendId)
+                        .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(
+                        content()
+                                .json(
+                                        """
+                {
+                  "resultCode": 0,
+                  "resultMessage": "friend unblocked successfully."
+                }
+                """))
                 .andReturn();
     }
 }

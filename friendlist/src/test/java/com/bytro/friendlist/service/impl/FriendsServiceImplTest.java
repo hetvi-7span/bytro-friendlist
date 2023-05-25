@@ -31,15 +31,37 @@ class FriendsServiceImplTest {
         return friends;
     }
 
+    private static final Integer userId = 1;
+    private static final Integer friendId = 2;
+
     @Test
     void unfriend() {
-        Integer userId = 1;
-        Integer friendId = 2;
-
         when(friendRepository.findByIdUserIdAndIdFriendId(userId, friendId))
                 .thenReturn(Optional.of(FRIENDS));
         assertDoesNotThrow(() -> friendsService.unfriend(userId, friendId));
         verify(friendRepository, times(1)).deleteByIdUserIdAndIdFriendId(userId, friendId);
         verify(friendRepository, times(1)).deleteByIdUserIdAndIdFriendId(friendId, userId);
+    }
+
+    @Test
+    void block() {
+        when(friendRepository.findByIdUserIdAndIdFriendId(userId, friendId))
+                .thenReturn(Optional.of(FRIENDS));
+        when(friendRepository.findByIdUserIdAndIdFriendId(friendId, userId))
+                .thenReturn(Optional.of(FRIENDS));
+        when(friendRepository.save(FRIENDS)).thenReturn(FRIENDS);
+        assertDoesNotThrow(() -> friendsService.block(userId, friendId));
+        verify(friendRepository, times(2)).save(FRIENDS);
+    }
+
+    @Test
+    void unblock() {
+        when(friendRepository.findByIdUserIdAndIdFriendId(userId, friendId))
+                .thenReturn(Optional.of(FRIENDS));
+        when(friendRepository.findByIdUserIdAndIdFriendId(friendId, userId))
+                .thenReturn(Optional.of(FRIENDS));
+        when(friendRepository.save(FRIENDS)).thenReturn(FRIENDS);
+        assertDoesNotThrow(() -> friendsService.unblock(userId, friendId));
+        verify(friendRepository, times(2)).save(FRIENDS);
     }
 }
