@@ -7,17 +7,39 @@ server:
 # SPRING CONFIGURATION
 spring:
   application:
-    name: friend-management
+    name: friendlist
   # SPRING JPA CONFIGURATION
   datasource:
     url: jdbc:postgresql://0.0.0.0:5432/friendlist_management
     username: postgres
-    password: root
+    password: test
   jpa:
     open-in-view: false
     hibernate:
       dialect: org.hibernate.dialect.PostgreSQLDialect
       ddl-auto: none
+  jackson:
+      default-property-inclusion: NON_NULL
+  flyway:
+    url: jdbc:postgresql://localhost:5432/friendlist_management
+    schemas: friendlist_management
+    user: postgres
+    password: root
+  mail:
+    host: smtp.gmail.com
+    transport:
+      protocol: smtp
+    username: test.friendlist.123@gmail.com
+    password: ejbzjgqnupdqfuxb
+    smtp:
+      debug: true
+      starttls:
+        enable: true
+      auth: true
+      ssl:
+        protocols: TLSv1.2
+        trust: smtp.gmail.com
+
 
 # LOGGING CONFIGURATION
 logging:
@@ -30,7 +52,11 @@ logging:
             sql:
               BasicBinder: TRACE
 
-
+#custom properties
+request:
+  mail:
+    subject : New friend alert
+    receiver : shahhetvi252@gmail.com
 
 
 

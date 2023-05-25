@@ -2,6 +2,8 @@
 # https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
 spring = "3.0.4"
 
+# https://mvnrepository.com/artifact/org.mapstruct/mapstruct
+mapstruct = "1.5.3.Final"
 
 [plugins]
 #https://mvnrepository.com/artifact/com.diffplug.spotless/spotless-plugin-gradle
@@ -31,6 +33,25 @@ springboot-test = { module = "org.springframework.boot:spring-boot-starter-test"
 
 # https://mvnrepository.com/artifact/com.h2database/h2
 h2-database = { module = "com.h2database:h2", version = "2.1.214" }
+
+# https://mvnrepository.com/artifact/org.projectlombok/lombok
+lombok = { module = "org.projectlombok:lombok", version = "1.18.26" }
+
+# https://mvnrepository.com/artifact/org.mapstruct/mapstruct
+mapstruct = { module = "org.mapstruct:mapstruct", version.ref = "mapstruct" }
+
+# https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
+mapstruct-processor = { module = "org.mapstruct:mapstruct-processor", version.ref = "mapstruct" }
+
+# https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+mail = {module = 'org.springframework.boot:spring-boot-starter-mail',version="1.2.0.RELEASE"}
+
+# https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
+logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "7.3" }
+
+# https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+flyway = { module = "org.flywaydb:flyway-core", version = "9.5.1" }
+
 
 
 
