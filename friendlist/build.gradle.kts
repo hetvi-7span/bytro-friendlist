@@ -1,7 +1,6 @@
 dependencies {
     implementation(libs.spring.starter.web)
     implementation(libs.spring.data.jpa)
-    implementation(libs.flyway)
     implementation(libs.postgres)
     implementation(project(":friendlist-shared"))
     implementation(libs.openApi)
