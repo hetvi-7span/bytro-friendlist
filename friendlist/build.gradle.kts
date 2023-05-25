@@ -12,6 +12,7 @@ dependencies {
     annotationProcessor(libs.mapstruct.processor)
     implementation(libs.mail)
     implementation(libs.logback.encoder)
+    implementation(libs.flyway)
 }
 
 group = "com.bytro.friendlist"
