@@ -20,6 +20,11 @@ spring:
       ddl-auto: none
   jackson:
       default-property-inclusion: NON_NULL
+  flyway:
+    url: jdbc:postgresql://localhost:5432/friendlist_management
+    schemas: friendlist_management
+    user: postgres
+    password: root
   mail:
     host: smtp.gmail.com
     transport:
