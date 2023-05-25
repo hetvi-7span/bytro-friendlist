@@ -49,9 +49,6 @@ mail = {module = 'org.springframework.boot:spring-boot-starter-mail',version="1.
 # https://mvnrepository.com/artifact/net.logstash.logback/logstash-logback-encoder
 logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version = "7.3" }
 
-# https://mvnrepository.com/artifact/org.flywaydb/flyway-core
-flyway = { module = "org.flywaydb:flyway-core", version = "9.5.1" }
-
 
 
 
