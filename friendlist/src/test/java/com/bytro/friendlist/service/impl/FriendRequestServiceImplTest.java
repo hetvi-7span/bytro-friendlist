@@ -35,6 +35,7 @@ class FriendRequestServiceImplTest {
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setId(1);
         friendRequest.setReceiverId(2);
+        friendRequest.setSenderId(2);
         friendRequest.setStatus(FriendRequestStatus.SENT);
         return friendRequest;
     }
@@ -42,8 +43,7 @@ class FriendRequestServiceImplTest {
     @Test
     void rejectFriendRequest() {
 
-        when(friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        REQUEST.getId(), REQUEST.getReceiverId(), FriendRequestStatus.SENT))
+        when(friendRequestRepository.findByIdAndStatus(REQUEST.getId(), FriendRequestStatus.SENT))
                 .thenReturn(Optional.of(REQUEST));
 
         friendRequestService.rejectFriendRequest(REQUEST);
@@ -53,8 +53,7 @@ class FriendRequestServiceImplTest {
 
     @Test
     void acceptFriendRequest() {
-        when(friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        REQUEST.getId(), REQUEST.getReceiverId(), FriendRequestStatus.SENT))
+        when(friendRequestRepository.findByIdAndStatus(REQUEST.getId(), FriendRequestStatus.SENT))
                 .thenReturn(Optional.of(REQUEST));
 
         friendRequestService.acceptFriendRequest(REQUEST);
@@ -87,5 +86,16 @@ class FriendRequestServiceImplTest {
         assertEquals(page, resultPage.getNumber());
         assertEquals(size, resultPage.getSize());
         assertEquals(friendRequestList, resultPage.getContent());
+    }
+
+    @Test
+    void cancel() {
+        Integer requestId = 1;
+        Integer senderId = 2;
+        when(friendRequestRepository.findByIdAndStatus(REQUEST.getId(), FriendRequestStatus.SENT))
+                .thenReturn(Optional.of(REQUEST));
+        when(friendRequestRepository.save(REQUEST)).thenReturn(REQUEST);
+        friendRequestService.cancel(requestId, senderId);
+        verify(friendRequestRepository, times(1)).save(REQUEST);
     }
 }

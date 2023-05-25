@@ -122,4 +122,28 @@ class FriendRequestControllerTest {
             """))
                 .andReturn();
     }
+
+    @Test
+    void cancelFriendRequest() throws Exception {
+        Integer requestId = 12;
+        Integer senderId = 15;
+        when(friendRequestHandler.cancel(requestId, senderId))
+                .thenReturn(new BaseResponse<>(0, "Friend request cancelled successfully."));
+        final var requestBuilder =
+                post("/api/friends/cancel-request/{requestId}/{senderId}", requestId, senderId)
+                        .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(
+                        content()
+                                .json(
+                                        """
+                    {
+                      "resultCode": 0,
+                      "resultMessage": "Friend request cancelled successfully."
+                    }
+                    """,
+                                        true))
+                .andReturn();
+    }
 }
