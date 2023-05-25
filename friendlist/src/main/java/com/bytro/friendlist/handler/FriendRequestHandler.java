@@ -100,4 +100,12 @@ public class FriendRequestHandler {
                 friendRequestPage.getNumber(),
                 pendingResponsesList);
     }
+
+    public BaseResponse<Void> cancel(Integer requestId, Integer senderId) {
+        friendRequestService.cancel(requestId, senderId);
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage(
+                        "friend.request.cancelled.successfully", new String[] {}, Locale.US));
+    }
 }
