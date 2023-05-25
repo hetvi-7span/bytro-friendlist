@@ -111,17 +111,17 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     @Override
     public void acceptFriendRequest(FriendRequest friendRequest) {
         FriendRequest validFriendRequest = validateFriendRequest(friendRequest);
-        validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
-        friendRequestRepository.save(validFriendRequest);
-        friendsService.acceptFriendRequest(validFriendRequest);
+        if (validFriendRequest.getReceiverId() == friendRequest.getReceiverId()) {
+            validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
+            friendRequestRepository.save(validFriendRequest);
+            friendsService.acceptFriendRequest(validFriendRequest);
+        }
     }
 
     private FriendRequest validateFriendRequest(FriendRequest friendRequest) {
         Optional<FriendRequest> validFriendRequest =
-                friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        friendRequest.getId(),
-                        friendRequest.getReceiverId(),
-                        FriendRequestStatus.SENT);
+                friendRequestRepository.findByIdAndStatus(
+                        friendRequest.getId(), FriendRequestStatus.SENT);
         if (validFriendRequest.isEmpty()) {
             throw new CustomException(
                     ResultCode.FRIEND_REQUEST_NOT_FOUND.getValue(),
@@ -138,5 +138,24 @@ public class FriendRequestServiceImpl implements FriendRequestService {
         Pageable paging = PageRequest.of(page, size);
         return friendRequestRepository.findByReceiverIdAndStatus(
                 userId, FriendRequestStatus.SENT, paging);
+    }
+
+    @Override
+    public void cancel(Integer requestId, Integer senderId) {
+        Optional<FriendRequest> validFriendRequest =
+                friendRequestRepository.findByIdAndStatus(requestId, FriendRequestStatus.SENT);
+        if (validFriendRequest.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_RECORD_NOT_FOUND.getValue(),
+                    messageSource.getMessage(
+                            "no.data.found", new String[] {Constant.FRIEND_REQUEST}, Locale.US));
+        }
+
+        FriendRequest friendRequest = validFriendRequest.get();
+
+        if (friendRequest.getSenderId() == senderId) {
+            friendRequest.setStatus(FriendRequestStatus.CANCELED);
+            friendRequestRepository.save(friendRequest);
+        }
     }
 }
