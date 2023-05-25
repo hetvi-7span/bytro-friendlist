@@ -17,7 +17,9 @@ public enum ResultCode {
 
     // approve reject request
     FRIEND_REQUEST_NOT_FOUND(2001, "Friend request not found"),
-    FRIEND_RECORD_NOT_FOUND(2002, "Friend record not found");
+    FRIEND_RECORD_NOT_FOUND(2002, "Friend record not found"),
+
+    FRIENDSHIP_DOES_NOT_EXISTS(3001, "You both are not friends");
 
     private final int value;
     private final String name;
