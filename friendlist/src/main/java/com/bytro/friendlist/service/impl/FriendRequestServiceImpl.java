@@ -46,6 +46,13 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     @Override
     public FriendRequest send(FriendRequest friendRequest) {
+        validateFriendsEligibility(friendRequest);
+        friendRequest.setStatus(FriendRequestStatus.SENT);
+        sendFriendRequestEmail(friendRequest.getMessage());
+        return friendRequestRepository.save(friendRequest);
+    }
+
+    private void validateFriendsEligibility(FriendRequest friendRequest) {
         // Check if user blocked you or not
         friendsService.checkIfUserIsBlockedOrNot(
                 friendRequest.getSenderId(), friendRequest.getReceiverId());
@@ -61,7 +68,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                                 "already.friends", new String[] {}, Locale.getDefault()));
             }
 
-            // check if friend request is sent or not
+            // check if friend request is previously sent or not
             if (previousPendingRequest.get().getStatus().equals(FriendRequestStatus.SENT)) {
                 throw new CustomException(
                         ResultCode.FRIEND_REQUEST_ALREADY_SENT.getValue(),
@@ -83,11 +90,6 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                             new String[] {},
                             Locale.getDefault()));
         }
-
-        friendRequest.setStatus(FriendRequestStatus.SENT);
-        sendFriendRequestEmail(friendRequest.getMessage());
-
-        return friendRequestRepository.save(friendRequest);
     }
 
     private void sendFriendRequestEmail(String message) {

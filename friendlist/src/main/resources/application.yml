@@ -12,7 +12,7 @@ spring:
   datasource:
     url: jdbc:postgresql://0.0.0.0:5432/friendlist_management
     username: postgres
-    password: test
+    password: root
   jpa:
     open-in-view: false
     hibernate:

@@ -21,7 +21,7 @@ public class EmailUtils {
     }
 
     public EmailDetails createEmailTemplate(String message) {
-        if (message.isEmpty()) {
+        if (message == null || message.isEmpty()) {
             return new EmailDetails(
                     mailReceiver,
                     messageSource.getMessage(
