@@ -18,7 +18,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(schema = "friendlist_management")
 public class FriendRequest extends Auditable {
 
     @Id

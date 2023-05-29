@@ -13,7 +13,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(schema = "friendlist_management")
 public class Friends extends Auditable {
     @EmbeddedId private FriendsId id;
     boolean isBlocked = false;
