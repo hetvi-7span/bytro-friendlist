@@ -18,7 +18,7 @@
       created_by varchar(255) NULL,
       updated_at timestamp(6) NULL,
       updated_by varchar(255) NULL,
-      blocked_by int4 NOT NULL,
+      blocked_by int4 NULL,
       is_blocked bool NOT NULL,
       CONSTRAINT friends_pkey PRIMARY KEY (friend_id, user_id)
   );
