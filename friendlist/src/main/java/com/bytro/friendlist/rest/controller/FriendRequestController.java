@@ -51,4 +51,11 @@ public class FriendRequestController {
             @PathVariable Integer requestId, @PathVariable Integer senderId) {
         return friendRequestHandler.cancel(requestId, senderId);
     }
+
+    @Operation(summary = "Status of friend request")
+    @GetMapping("/check-friend-request-status")
+    public BaseResponse<FriendRequestResponse> getFriendRequestStatus(
+            @RequestParam int friendRequestId) {
+        return friendRequestHandler.getFriendRequestStatus(friendRequestId);
+    }
 }

@@ -160,4 +160,18 @@ public class FriendRequestServiceImpl implements FriendRequestService {
             friendRequestRepository.save(friendRequest);
         }
     }
+
+    @Override
+    public FriendRequest getStatus(int friendRequestId) {
+        Optional<FriendRequest> friendRequest = friendRequestRepository.findById(friendRequestId);
+        if (friendRequest.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_REQUEST_NOT_FOUND.getValue(),
+                    messageSource.getMessage(
+                            "no.data.found",
+                            new String[] {Constant.FRIEND_REQUEST},
+                            Locale.getDefault()));
+        }
+        return friendRequest.get();
+    }
 }
