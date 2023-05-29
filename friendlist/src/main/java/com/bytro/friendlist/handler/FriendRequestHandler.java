@@ -113,4 +113,14 @@ public class FriendRequestHandler {
                 messageSource.getMessage(
                         "friend.request.cancelled.successfully", new String[] {}, Locale.US));
     }
+
+    public BaseResponse<FriendRequestResponse> getFriendRequestStatus(int friendRequestId) {
+        FriendRequest friendRequest = friendRequestService.getStatus(friendRequestId);
+        FriendRequestResponse friendRequestResponse =
+                friendRequestMapper.entityToResponse(friendRequest);
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage("success", new String[] {}, Locale.getDefault()),
+                friendRequestResponse);
+    }
 }

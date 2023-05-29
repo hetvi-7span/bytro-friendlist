@@ -2,6 +2,7 @@ package com.bytro.friendlist.entity;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(schema = "friendlist_management")
 public class Friends extends Auditable {
     @EmbeddedId private FriendsId id;
     boolean isBlocked = false;
