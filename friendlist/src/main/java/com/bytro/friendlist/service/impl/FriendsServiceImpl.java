@@ -7,6 +7,7 @@ import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.repository.FriendRepository;
 import com.bytro.friendlist.service.FriendsService;
 import com.bytro.friendlist.shared.enums.ResultCode;
+import com.bytro.friendlist.utils.Constant;
 import jakarta.transaction.Transactional;
 import java.util.Locale;
 import java.util.Optional;
@@ -43,8 +44,11 @@ public class FriendsServiceImpl implements FriendsService {
         Optional<Friends> friends = friendRepository.findByIdUserIdAndIdFriendId(userId, friendId);
         if (friends.isEmpty()) {
             throw new CustomException(
-                    ResultCode.USER_NOT_FOUND.getValue(),
-                    messageSource.getMessage("no.data.found", new String[] {}, Locale.US));
+                    ResultCode.NOT_FOUND.getValue(),
+                    messageSource.getMessage(
+                            "no.data.found",
+                            new String[] {Constant.FRIENDSHIP},
+                            Locale.getDefault()));
         }
         friendRepository.deleteByIdUserIdAndIdFriendId(userId, friendId);
         friendRepository.deleteByIdUserIdAndIdFriendId(friendId, userId);
@@ -52,7 +56,7 @@ public class FriendsServiceImpl implements FriendsService {
 
     @Override
     public void block(Integer userId, Integer friendId) {
-        Friends friendShip = checkIfFriendsExists(userId, friendId);
+        Friends friendShip = checkIfFriendshipExists(userId, friendId);
         friendShip.setBlocked(true);
 
         Optional<Friends> inverseFriendshipOptional =
@@ -67,7 +71,7 @@ public class FriendsServiceImpl implements FriendsService {
 
     @Override
     public void unblock(Integer userId, Integer friendId) {
-        Friends friendShip = checkIfFriendsExists(userId, friendId);
+        Friends friendShip = checkIfFriendshipExists(userId, friendId);
         friendShip.setBlocked(false);
 
         Optional<Friends> inverseFriendshipOptional =
@@ -80,13 +84,24 @@ public class FriendsServiceImpl implements FriendsService {
         friendRepository.save(friendShip);
     }
 
-    private Friends checkIfFriendsExists(Integer userId, Integer friendId) {
+    @Override
+    public void checkIfUserIsBlockedOrNot(int userId, int friendId) {
+        Optional<Friends> friends = friendRepository.findByIdFriendIdAndIdUserId(userId, friendId);
+        if (friends.isPresent() && friends.get().isBlocked()) {
+            throw new CustomException(
+                    ResultCode.BLOCKED_BY_USER.getValue(),
+                    messageSource.getMessage(
+                            "blocked.by.user", new String[] {}, Locale.getDefault()));
+        }
+    }
+
+    private Friends checkIfFriendshipExists(Integer userId, Integer friendId) {
         Optional<Friends> friends = friendRepository.findByIdUserIdAndIdFriendId(userId, friendId);
         if (friends.isEmpty()) {
             throw new CustomException(
                     ResultCode.FRIENDSHIP_DOES_NOT_EXISTS.getValue(),
                     messageSource.getMessage(
-                            "friendship.does.not.exists", new String[] {}, Locale.US));
+                            "friendship.does.not.exists", new String[] {}, Locale.getDefault()));
         }
         return friends.get();
     }

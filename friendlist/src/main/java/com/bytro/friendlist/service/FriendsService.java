@@ -10,4 +10,6 @@ public interface FriendsService {
     void block(Integer userId, Integer friendId);
 
     void unblock(Integer userId, Integer friendId);
+
+    void checkIfUserIsBlockedOrNot(int userId, int friendId);
 }
