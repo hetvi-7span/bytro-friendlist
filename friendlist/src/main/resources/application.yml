@@ -10,20 +10,19 @@ spring:
     name: friendlist
   # SPRING JPA CONFIGURATION
   datasource:
-    url: jdbc:postgresql://0.0.0.0:5432/friendlist_management
-    username: postgres
+    url: jdbc:mariadb://0.0.0.0:3306/friendlist_management
+    username: root
     password: root
   jpa:
     open-in-view: false
     hibernate:
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+      dialect: org.hibernate.dialect.MariaDBDialect
       ddl-auto: none
   jackson:
       default-property-inclusion: NON_NULL
   flyway:
-    url: jdbc:postgresql://localhost:5432/friendlist_management
-    schemas: friendlist_management
-    user: postgres
+    url: jdbc:mariadb://localhost:3306/friendlist_management
+    user: root
     password: root
   mail:
     host: smtp.gmail.com
