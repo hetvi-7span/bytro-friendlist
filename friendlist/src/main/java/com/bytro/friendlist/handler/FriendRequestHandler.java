@@ -3,6 +3,7 @@ package com.bytro.friendlist.handler;
 import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.exception.CustomException;
 import com.bytro.friendlist.service.FriendRequestService;
+import com.bytro.friendlist.service.UserService;
 import com.bytro.friendlist.shared.enums.ResultCode;
 import com.bytro.friendlist.shared.record.request.AcceptRejectFriendRequest;
 import com.bytro.friendlist.shared.record.request.SendFriendRequest;
@@ -10,7 +11,6 @@ import com.bytro.friendlist.shared.record.response.BaseResponse;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
 import com.bytro.friendlist.shared.record.response.PendingFriendRequestResponse;
 import com.bytro.friendlist.transformer.FriendRequestMapper;
-import com.bytro.friendlist.utils.UserUtils;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.context.MessageSource;
@@ -24,13 +24,17 @@ public class FriendRequestHandler {
     private final FriendRequestMapper friendRequestMapper;
     private final MessageSource messageSource;
 
+    private final UserService userService;
+
     FriendRequestHandler(
             final FriendRequestService friendRequestService,
             final FriendRequestMapper friendRequestMapper,
-            final MessageSource messageSource) {
+            final MessageSource messageSource,
+            final UserService userService) {
         this.friendRequestService = friendRequestService;
         this.friendRequestMapper = friendRequestMapper;
         this.messageSource = messageSource;
+        this.userService = userService;
     }
 
     public BaseResponse<FriendRequestResponse> send(SendFriendRequest sendFriendRequest) {
@@ -44,7 +48,7 @@ public class FriendRequestHandler {
         return new BaseResponse<>(
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage(
-                        "friend.request.sent.successfully", new String[] {}, Locale.US),
+                        "friend.request.sent.successfully", new String[] {}, Locale.getDefault()),
                 friendRequestResponse);
     }
 
@@ -53,22 +57,17 @@ public class FriendRequestHandler {
             throw new CustomException(
                     ResultCode.SENDER_RECEIVER_SAME.getValue(),
                     messageSource.getMessage(
-                            "send.receiver.should.not.be.same", new String[] {}, Locale.US));
+                            "send.receiver.should.not.be.same",
+                            new String[] {},
+                            Locale.getDefault()));
         }
-        checkUser(sendFriendRequest.senderId());
-        checkUser(sendFriendRequest.receiverId());
-    }
-
-    private void checkUser(int userId) {
-        if (!UserUtils.checkUsersExistence(userId)) {
-            throw new CustomException(
-                    ResultCode.USER_NOT_FOUND.getValue(),
-                    messageSource.getMessage("user.not.found", new String[] {}, Locale.US));
-        }
+        userService.checkUser(sendFriendRequest.senderId());
+        userService.checkUser(sendFriendRequest.receiverId());
     }
 
     public BaseResponse<Void> acceptRejectFriendRequest(
             AcceptRejectFriendRequest acceptRejectFriendRequest) {
+        userService.checkUser(acceptRejectFriendRequest.recipientId());
         FriendRequest friendRequest =
                 friendRequestMapper.requestToEntity(acceptRejectFriendRequest);
         if (acceptRejectFriendRequest.isAccepted()) {
@@ -76,13 +75,17 @@ public class FriendRequestHandler {
             return new BaseResponse<>(
                     ResultCode.SUCCESS.getValue(),
                     messageSource.getMessage(
-                            "friend.request.accept.successfully", new String[] {}, Locale.US));
+                            "friend.request.accept.successfully",
+                            new String[] {},
+                            Locale.getDefault()));
         }
         friendRequestService.rejectFriendRequest(friendRequest);
         return new BaseResponse<>(
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage(
-                        "friend.request.declined.successfully", new String[] {}, Locale.US));
+                        "friend.request.declined.successfully",
+                        new String[] {},
+                        Locale.getDefault()));
     }
 
     public BaseResponse<List<PendingFriendRequestResponse>> getFriendRequestList(
@@ -94,10 +97,30 @@ public class FriendRequestHandler {
         return new BaseResponse<>(
                 ResultCode.SUCCESS.getValue(),
                 messageSource.getMessage(
-                        "pending.request.fetched.successfully", new String[] {}, Locale.US),
+                        "pending.request.fetched.successfully",
+                        new String[] {},
+                        Locale.getDefault()),
                 friendRequestPage.getTotalElements(),
                 friendRequestPage.getTotalPages(),
                 friendRequestPage.getNumber(),
                 pendingResponsesList);
+    }
+
+    public BaseResponse<Void> cancel(Integer requestId, Integer senderId) {
+        friendRequestService.cancel(requestId, senderId);
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage(
+                        "friend.request.cancelled.successfully", new String[] {}, Locale.US));
+    }
+
+    public BaseResponse<FriendRequestResponse> getFriendRequestStatus(int friendRequestId) {
+        FriendRequest friendRequest = friendRequestService.getStatus(friendRequestId);
+        FriendRequestResponse friendRequestResponse =
+                friendRequestMapper.entityToResponse(friendRequest);
+        return new BaseResponse<>(
+                ResultCode.SUCCESS.getValue(),
+                messageSource.getMessage("success", new String[] {}, Locale.getDefault()),
+                friendRequestResponse);
     }
 }

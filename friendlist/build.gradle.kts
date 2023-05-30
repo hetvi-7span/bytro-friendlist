@@ -1,7 +1,7 @@
 dependencies {
     implementation(libs.spring.starter.web)
     implementation(libs.spring.data.jpa)
-    implementation(libs.postgres)
+    implementation(libs.mariadb)
     implementation(project(":friendlist-shared"))
     implementation(libs.openApi)
     testImplementation(libs.springboot.test)
@@ -12,6 +12,7 @@ dependencies {
     annotationProcessor(libs.mapstruct.processor)
     implementation(libs.mail)
     implementation(libs.logback.encoder)
+    implementation(libs.flyway)
 }
 
 group = "com.bytro.friendlist"

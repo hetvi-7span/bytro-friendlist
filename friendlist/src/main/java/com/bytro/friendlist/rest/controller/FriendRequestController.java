@@ -7,8 +7,10 @@ import com.bytro.friendlist.shared.record.response.BaseResponse;
 import com.bytro.friendlist.shared.record.response.FriendRequestResponse;
 import com.bytro.friendlist.shared.record.response.PendingFriendRequestResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,14 +27,14 @@ public class FriendRequestController {
     @Operation(summary = "Send friend request")
     @PostMapping("/send-friend-request")
     public BaseResponse<FriendRequestResponse> send(
-            @RequestBody SendFriendRequest sendFriendRequest) {
+            @Valid @RequestBody SendFriendRequest sendFriendRequest) {
         return friendRequestHandler.send(sendFriendRequest);
     }
 
     @Operation(summary = "Accepting/rejecting a friend request")
     @PostMapping("/accept-reject-friend-request")
     public BaseResponse<Void> acceptRejectFriendRequest(
-            @RequestBody AcceptRejectFriendRequest acceptRejectFriendRequest) {
+            @Valid @RequestBody AcceptRejectFriendRequest acceptRejectFriendRequest) {
         return friendRequestHandler.acceptRejectFriendRequest(acceptRejectFriendRequest);
     }
 
@@ -41,5 +43,19 @@ public class FriendRequestController {
     public BaseResponse<List<PendingFriendRequestResponse>> getPendingFriendRequestList(
             @RequestParam Integer userId, @RequestParam Integer page, @RequestParam Integer size) {
         return friendRequestHandler.getFriendRequestList(userId, page, size);
+    }
+
+    @Operation(summary = "Cancel a friend request")
+    @PostMapping("/api/friends/cancel-request/{requestId}/{senderId}")
+    public BaseResponse<Void> cancelFriendRequest(
+            @PathVariable Integer requestId, @PathVariable Integer senderId) {
+        return friendRequestHandler.cancel(requestId, senderId);
+    }
+
+    @Operation(summary = "Status of friend request")
+    @GetMapping("/check-friend-request-status")
+    public BaseResponse<FriendRequestResponse> getFriendRequestStatus(
+            @RequestParam int friendRequestId) {
+        return friendRequestHandler.getFriendRequestStatus(friendRequestId);
     }
 }
