@@ -2,6 +2,7 @@ package com.bytro.friendlist.rest.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,6 +60,34 @@ class FriendRequestControllerTest {
                                           }
                                         }
                                         """))
+                .andReturn();
+    }
+
+    @Test
+    void getFriendRequestStatus() throws Exception {
+        final Integer friendRequestId = 1;
+        when(friendRequestHandler.getFriendRequestStatus(friendRequestId))
+                .thenReturn(
+                        new BaseResponse<>(0, "success.", new FriendRequestResponse(1, "SENT")));
+        final var requestBuilder =
+                get("/check-friend-request-status")
+                        .param("friendRequestId", String.valueOf(friendRequestId))
+                        .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(
+                        content()
+                                .json(
+                                        """
+                                                        {
+                                                           "resultCode": 0,
+                                                           "resultMessage": "success.",
+                                                           "result": {
+                                                             "friendRequestId": 1,
+                                                             "status": "SENT"
+                                                           }
+                                                         }
+                                                """))
                 .andReturn();
     }
 }

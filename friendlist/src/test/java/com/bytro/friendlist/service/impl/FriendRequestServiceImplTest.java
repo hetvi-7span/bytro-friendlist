@@ -47,4 +47,13 @@ class FriendRequestServiceImplTest {
         assertNotNull(result);
         assertEquals(FriendRequestStatus.SENT, result.getStatus());
     }
+
+    @Test
+    void getStatus() {
+        final int friendRequestId = 1;
+        when(friendRequestRepository.findById(friendRequestId)).thenReturn(Optional.of(REQUEST));
+        final var result = friendRequestService.getStatus(friendRequestId);
+        assertNotNull(result);
+        assertEquals(REQUEST.getStatus(), result.getStatus());
+    }
 }
