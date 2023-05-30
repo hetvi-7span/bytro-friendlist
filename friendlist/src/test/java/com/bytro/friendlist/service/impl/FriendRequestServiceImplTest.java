@@ -35,8 +35,7 @@ class FriendRequestServiceImplTest {
     @Test
     void rejectFriendRequest() {
 
-        when(friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        REQUEST.getId(), REQUEST.getReceiverId(), FriendRequestStatus.SENT))
+        when(friendRequestRepository.findByIdAndStatus(REQUEST.getId(), FriendRequestStatus.SENT))
                 .thenReturn(Optional.of(REQUEST));
 
         friendRequestService.rejectFriendRequest(REQUEST);
@@ -46,8 +45,7 @@ class FriendRequestServiceImplTest {
 
     @Test
     void acceptFriendRequest() {
-        when(friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        REQUEST.getId(), REQUEST.getReceiverId(), FriendRequestStatus.SENT))
+        when(friendRequestRepository.findByIdAndStatus(REQUEST.getId(), FriendRequestStatus.SENT))
                 .thenReturn(Optional.of(REQUEST));
 
         friendRequestService.acceptFriendRequest(REQUEST);

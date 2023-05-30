@@ -32,11 +32,11 @@ class FriendRequestRepositoryTest {
     }
 
     @Test
-    void findByIdAndReceiverIdAndStatus() {
+    void findByIdAndStatus() {
         friendRequestRepository.save(REQUEST);
         final var result =
-                friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        REQUEST.getId(), REQUEST.getReceiverId(), FriendRequestStatus.SENT);
+                friendRequestRepository.findByIdAndStatus(
+                        REQUEST.getId(), FriendRequestStatus.SENT);
         assertTrue(result.isPresent());
         assertEquals(REQUEST, result.get());
     }
