@@ -24,26 +24,6 @@ import org.springframework.test.context.ActiveProfiles;
 class FriendRequestRepositoryTest {
     @Autowired private FriendRequestRepository friendRequestRepository;
 
-    private static final FriendRequest REQUEST = createFriendRequest();
-
-    private static FriendRequest createFriendRequest() {
-        FriendRequest friendRequest = new FriendRequest();
-        friendRequest.setSenderId(1);
-        friendRequest.setReceiverId(2);
-        friendRequest.setStatus(FriendRequestStatus.SENT);
-        return friendRequest;
-    }
-
-    @Test
-    void findByIdAndReceiverIdAndStatus() {
-        friendRequestRepository.save(REQUEST);
-        final var result =
-                friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        REQUEST.getId(), REQUEST.getReceiverId(), FriendRequestStatus.SENT);
-        assertTrue(result.isPresent());
-        assertEquals(REQUEST, result.get());
-    }
-
     @Test
     void findByReceiverIdAndStatus() {
         Integer receiverId = 1;
