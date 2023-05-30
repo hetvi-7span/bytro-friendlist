@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.bytro.friendlist.entity.FriendRequest;
 import com.bytro.friendlist.shared.enums.FriendRequestStatus;
-import com.bytro.friendlist.utils.Constant;
+import com.bytro.friendlist.utils.TestConstant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles(Constant.TEST_PROFILE)
+@ActiveProfiles(TestConstant.TEST_PROFILE)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class FriendRequestRepositoryTest {
     @Autowired private FriendRequestRepository friendRequestRepository;
@@ -33,12 +33,22 @@ class FriendRequestRepositoryTest {
     }
 
     @Test
-    void findBySenderIdAndReceiverIdAndStatus() {
+    void findBySenderIdAndReceiverIdOrderByIdDesc() {
         friendRequestRepository.save(REQUEST);
         final var result =
-                friendRequestRepository.findBySenderIdAndReceiverIdAndStatus(
-                        REQUEST.getSenderId(), REQUEST.getReceiverId(), FriendRequestStatus.SENT);
+                friendRequestRepository.findBySenderIdAndReceiverIdOrderByIdDesc(
+                        REQUEST.getSenderId(), REQUEST.getReceiverId());
         assertTrue(result.isPresent());
-        assertEquals(REQUEST, result.get());
+        assertEquals(REQUEST.getStatus(), result.get().getStatus());
+    }
+
+    @Test
+    void findByReceiverIdAndSenderIdOrderByIdDesc() {
+        friendRequestRepository.save(REQUEST);
+        final var result =
+                friendRequestRepository.findByReceiverIdAndSenderIdOrderByIdDesc(
+                        REQUEST.getReceiverId(), REQUEST.getSenderId());
+        assertTrue(result.isPresent());
+        assertEquals(REQUEST.getStatus(), result.get().getStatus());
     }
 }

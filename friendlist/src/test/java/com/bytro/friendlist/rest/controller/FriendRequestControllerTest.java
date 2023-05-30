@@ -32,13 +32,13 @@ class FriendRequestControllerTest {
                         new BaseResponse<>(
                                 0,
                                 "Friend request sent successfully.",
-                                new FriendRequestResponse(15)));
+                                new FriendRequestResponse(2, "SENT")));
         final var requestBuilder =
                 post("/send-friend-request")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
                                 """
-                {
+                  {
                   "senderId": 11,
                   "receiverId": 21,
                   "message": "hello"
@@ -50,15 +50,15 @@ class FriendRequestControllerTest {
                         content()
                                 .json(
                                         """
-
-            {
-              "resultCode": 0,
-              "resultMessage": "Friend request sent successfully.",
-              "data": {
-                "friendRequestId": 15
-              }
-            }
-            """))
+                                        {
+                                          "resultCode": 0,
+                                          "resultMessage": "Friend request sent successfully.",
+                                          "result": {
+                                            "friendRequestId": 2,
+                                            "status": "SENT"
+                                          }
+                                        }
+                                        """))
                 .andReturn();
     }
 }

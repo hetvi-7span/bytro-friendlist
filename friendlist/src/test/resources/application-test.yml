@@ -1,7 +1,7 @@
 
 spring:
   datasource:
-    url: jdbc:h2:mem:friendlist_management;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL;INIT=CREATE SCHEMA IF NOT EXISTS friendlist_management;
+    url: jdbc:h2:mem:friendlist_management;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MariaDB;INIT=CREATE SCHEMA IF NOT EXISTS friendlist_management;
     username: sa
     password:
     driverClassName: org.h2.Driver
@@ -16,3 +16,4 @@ spring:
 
   flyway:
     enabled: false
+
