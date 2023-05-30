@@ -1,3 +1,8 @@
 package com.bytro.friendlist.shared.record.request;
 
-public record SendFriendRequest(int senderId, int receiverId, String message) {}
+import jakarta.validation.constraints.Min;
+
+public record SendFriendRequest(
+        @Min(value = 1, message = "{minimum.value.of.sender.id}") int senderId,
+        @Min(value = 1, message = "{minimum.value.of.receipt.id}") int receiverId,
+        String message) {}
