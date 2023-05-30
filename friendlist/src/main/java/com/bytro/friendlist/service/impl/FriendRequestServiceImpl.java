@@ -14,6 +14,9 @@ import com.bytro.friendlist.utils.EmailUtils;
 import java.util.Locale;
 import java.util.Optional;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,18 +46,50 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     @Override
     public FriendRequest send(FriendRequest friendRequest) {
+        validateFriendsEligibility(friendRequest);
+        friendRequest.setStatus(FriendRequestStatus.SENT);
+        sendFriendRequestEmail(friendRequest.getMessage());
+        return friendRequestRepository.save(friendRequest);
+    }
+
+    private void validateFriendsEligibility(FriendRequest friendRequest) {
+        // Check if user blocked you or not
+        friendsService.checkIfUserIsBlockedOrNot(
+                friendRequest.getSenderId(), friendRequest.getReceiverId());
 
         Optional<FriendRequest> previousPendingRequest = findPreviousPendingRequest(friendRequest);
         if (previousPendingRequest.isPresent()) {
-            throw new CustomException(
-                    ResultCode.FRIEND_REQUEST_ALREADY_SENT.getValue(),
-                    messageSource.getMessage(
-                            "friend.request.already.sent", new String[] {}, Locale.US));
-        }
-        friendRequest.setStatus(FriendRequestStatus.SENT);
-        sendFriendRequestEmail(friendRequest.getMessage());
 
-        return friendRequestRepository.save(friendRequest);
+            // check if both users are friends or not
+            if (previousPendingRequest.get().getStatus().equals(FriendRequestStatus.ACCEPTED)) {
+                throw new CustomException(
+                        ResultCode.ALREADY_FRIENDS.getValue(),
+                        messageSource.getMessage(
+                                "already.friends", new String[] {}, Locale.getDefault()));
+            }
+
+            // check if friend request is previously sent or not
+            if (previousPendingRequest.get().getStatus().equals(FriendRequestStatus.SENT)) {
+                throw new CustomException(
+                        ResultCode.FRIEND_REQUEST_ALREADY_SENT.getValue(),
+                        messageSource.getMessage(
+                                "friend.request.already.sent",
+                                new String[] {},
+                                Locale.getDefault()));
+            }
+        }
+        // check if friend request already received by user
+        Optional<FriendRequest> friendRequestAlreadyReceivedByUser =
+                friendRequestRepository.findByReceiverIdAndSenderIdOrderByIdDesc(
+                        friendRequest.getSenderId(), friendRequest.getReceiverId());
+        if (friendRequestAlreadyReceivedByUser.isPresent()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_REQUEST_ALREADY_RECEIVED.getValue(),
+                    messageSource.getMessage(
+                            "friend.request.already.received",
+                            new String[] {},
+                            Locale.getDefault()));
+        }
     }
 
     private void sendFriendRequestEmail(String message) {
@@ -64,10 +99,8 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     @Override
     public Optional<FriendRequest> findPreviousPendingRequest(FriendRequest friendRequest) {
-        return friendRequestRepository.findBySenderIdAndReceiverIdAndStatus(
-                friendRequest.getSenderId(),
-                friendRequest.getReceiverId(),
-                FriendRequestStatus.SENT);
+        return friendRequestRepository.findBySenderIdAndReceiverIdOrderByIdDesc(
+                friendRequest.getSenderId(), friendRequest.getReceiverId());
     }
 
     @Override
@@ -80,23 +113,65 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     @Override
     public void acceptFriendRequest(FriendRequest friendRequest) {
         FriendRequest validFriendRequest = validateFriendRequest(friendRequest);
-        validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
-        friendRequestRepository.save(validFriendRequest);
-        friendsService.acceptFriendRequest(friendRequest);
+        if (validFriendRequest.getReceiverId() == friendRequest.getReceiverId()) {
+            validFriendRequest.setStatus(FriendRequestStatus.ACCEPTED);
+            friendRequestRepository.save(validFriendRequest);
+            friendsService.acceptFriendRequest(validFriendRequest);
+        }
     }
 
     private FriendRequest validateFriendRequest(FriendRequest friendRequest) {
         Optional<FriendRequest> validFriendRequest =
-                friendRequestRepository.findByIdAndReceiverIdAndStatus(
-                        friendRequest.getId(),
-                        friendRequest.getReceiverId(),
-                        FriendRequestStatus.SENT);
+                friendRequestRepository.findByIdAndStatus(
+                        friendRequest.getId(), FriendRequestStatus.SENT);
         if (validFriendRequest.isEmpty()) {
             throw new CustomException(
                     ResultCode.FRIEND_REQUEST_NOT_FOUND.getValue(),
                     messageSource.getMessage(
-                            "no.data.found", new String[] {Constant.FRIEND_REQUEST}, Locale.US));
+                            "no.data.found",
+                            new String[] {Constant.FRIEND_REQUEST},
+                            Locale.getDefault()));
         }
         return validFriendRequest.get();
+    }
+
+    @Override
+    public Page<FriendRequest> getFriendRequestList(Integer userId, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return friendRequestRepository.findByReceiverIdAndStatus(
+                userId, FriendRequestStatus.SENT, paging);
+    }
+
+    @Override
+    public void cancel(Integer requestId, Integer senderId) {
+        Optional<FriendRequest> validFriendRequest =
+                friendRequestRepository.findByIdAndStatus(requestId, FriendRequestStatus.SENT);
+        if (validFriendRequest.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_RECORD_NOT_FOUND.getValue(),
+                    messageSource.getMessage(
+                            "no.data.found", new String[] {Constant.FRIEND_REQUEST}, Locale.US));
+        }
+
+        FriendRequest friendRequest = validFriendRequest.get();
+
+        if (friendRequest.getSenderId() == senderId) {
+            friendRequest.setStatus(FriendRequestStatus.CANCELED);
+            friendRequestRepository.save(friendRequest);
+        }
+    }
+
+    @Override
+    public FriendRequest getStatus(int friendRequestId) {
+        Optional<FriendRequest> friendRequest = friendRequestRepository.findById(friendRequestId);
+        if (friendRequest.isEmpty()) {
+            throw new CustomException(
+                    ResultCode.FRIEND_REQUEST_NOT_FOUND.getValue(),
+                    messageSource.getMessage(
+                            "no.data.found",
+                            new String[] {Constant.FRIEND_REQUEST},
+                            Locale.getDefault()));
+        }
+        return friendRequest.get();
     }
 }

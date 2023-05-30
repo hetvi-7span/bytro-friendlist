@@ -5,6 +5,7 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class EmailUtils {
@@ -21,7 +22,7 @@ public class EmailUtils {
     }
 
     public EmailDetails createEmailTemplate(String message) {
-        if (message.isEmpty()) {
+        if (StringUtils.hasLength(message)) {
             return new EmailDetails(
                     mailReceiver,
                     messageSource.getMessage(
