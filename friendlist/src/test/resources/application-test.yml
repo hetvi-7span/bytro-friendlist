@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:friendlist_management;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MariaDb;INIT=CREATE SCHEMA IF NOT EXISTS friendlist_management;
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    platform: h2
+    initialization-mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+
+  flyway:
+    enabled: false
